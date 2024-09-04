@@ -8,5 +8,5 @@ export enum REACTION {
 
 export interface Response {
   game: Game;
-  player: Player;
+  player?: Player;
 }

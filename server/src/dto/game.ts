@@ -7,8 +7,11 @@ import { Player } from "~/dto/player";
 export class Game {
   public id: string = generateGameId();
   public players: Array<Player> = [];
-  private maxPlayers = 2;
-  private minPlayers = 4;
+
+  private maxPlayers = 4;
+  private minPlayers = 2;
+  private maxHands = 7;
+
   public currentHand: Array<Hand> = [];
   public previousHand: Record<string, Array<Hand>> = {};
   public score: Record<string, Array<number>> = {};
@@ -18,12 +21,33 @@ export class Game {
   constructor() {}
 
   canAddPlayer() {
-    return this.players.length < this.maxPlayers;
+    return (
+      this.players.length < this.maxPlayers &&
+      this.status === GAME_STATUS.CREATED
+    );
   }
 
   addPlayer(player: Player) {
     if (this.canAddPlayer()) {
       this.players.push(player);
     }
+  }
+
+  canStartGame() {
+    return (
+      this.players.length >= this.minPlayers &&
+      this.players.length <= this.maxPlayers
+    );
+  }
+
+  startGame() {
+    console.log(this.canStartGame());
+    if (!this.canStartGame()) {
+      throw new Error(
+        "UNHANDLED: Cannot start the game (min max players check)"
+      );
+    }
+
+    this.status = GAME_STATUS.STARTED;
   }
 }

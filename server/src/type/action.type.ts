@@ -15,7 +15,9 @@ export interface JoinGameRequest {
   gameId: string;
 }
 
-export interface StartGameRequest {}
+export interface StartGameRequest {
+  gameId: string;
+}
 
 export interface StartRoundRequest {}
 

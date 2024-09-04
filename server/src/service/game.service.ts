@@ -9,6 +9,8 @@ export class GameService {
   }
 
   createGame() {
+    // TODO: don't allow same user to create a new game if
+    // in existing game
     const player = new Player();
     const game = new Game();
 
@@ -18,19 +20,7 @@ export class GameService {
   }
 
   joinGame(gameId?: string) {
-    if (!gameId) {
-      throw new Error("UNHANDLED: No game ID found");
-    }
-
-    const game = this.games[gameId];
-
-    if (!this.doesGameExist(game)) {
-      throw new Error("UNHANDLED: Game does not exist");
-    }
-
-    if (!game.canAddPlayer()) {
-      throw new Error("UNHANDLED: Max number of players in the game");
-    }
+    const game = this.validateAndGetGame(gameId);
 
     const player = new Player();
     game.players.push(player);
@@ -38,7 +28,12 @@ export class GameService {
     return { game, player };
   }
 
-  startGame() {}
+  startGame(gameId: string) {
+    const game = this.validateAndGetGame(gameId);
+    game.startGame();
+    this.games[game.id] = game;
+    return { game };
+  }
 
   startRound() {}
 
@@ -46,7 +41,17 @@ export class GameService {
 
   handleInvalidAction() {}
 
-  doesGameExist(game: Game) {
-    return Boolean(this.games[game.id]);
+  validateAndGetGame(gameId?: string) {
+    if (!gameId) {
+      throw new Error("UNHANDLED: No game ID found");
+    }
+
+    const game = this.games[gameId];
+
+    if (!Boolean(this.games[game.id])) {
+      throw new Error("UNHANDLED: Game does not exist");
+    }
+
+    return game;
   }
 }
