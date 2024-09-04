@@ -19,7 +19,9 @@ export interface StartGameRequest {
   gameId: string;
 }
 
-export interface StartRoundRequest {}
+export interface StartRoundRequest {
+  gameId: string;
+}
 
 export interface PlayCardRequest {}
 

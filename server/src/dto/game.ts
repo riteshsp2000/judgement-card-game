@@ -3,6 +3,7 @@ import { generateGameId } from "~/util/generateId";
 import { Card } from "~/dto/card";
 import { Hand } from "~/dto/hand";
 import { Player } from "~/dto/player";
+import { Deck } from "./deck";
 
 export class Game {
   public id: string = generateGameId();
@@ -17,6 +18,7 @@ export class Game {
   public score: Record<string, Array<number>> = {};
   public dealtCards: Record<string, Array<Card>> = {};
   public status: GAME_STATUS = GAME_STATUS.CREATED;
+  public playerToStart = 0;
 
   constructor() {}
 
@@ -41,7 +43,6 @@ export class Game {
   }
 
   startGame() {
-    console.log(this.canStartGame());
     if (!this.canStartGame()) {
       throw new Error(
         "UNHANDLED: Cannot start the game (min max players check)"
@@ -49,5 +50,17 @@ export class Game {
     }
 
     this.status = GAME_STATUS.STARTED;
+  }
+
+  startRound() {
+    const deck = new Deck();
+
+    this.players.forEach((player) => {
+      if (!this.dealtCards[player.id]) {
+        this.dealtCards[player.id] = [];
+      }
+
+      this.dealtCards[player.id] = deck.dealCards(this.maxHands);
+    });
   }
 }

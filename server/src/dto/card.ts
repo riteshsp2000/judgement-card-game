@@ -1,11 +1,11 @@
-import { CARD_VALUE, SUITE } from "~/type/card.type";
+import { RANK, SUIT } from "~/type/card.type";
 
 export class Card {
-  private suite: SUITE | undefined;
-  private card: CARD_VALUE | undefined;
+  public suite: SUIT | undefined;
+  public rank: RANK | undefined;
 
-  constructor(suite: SUITE, card: CARD_VALUE) {
+  constructor(suite: SUIT, rank: RANK) {
     this.suite = suite;
-    this.card = card;
+    this.rank = rank;
   }
 }

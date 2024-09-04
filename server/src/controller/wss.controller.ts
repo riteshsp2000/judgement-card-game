@@ -4,6 +4,7 @@ import {
   JoinGameRequest,
   Request,
   StartGameRequest,
+  StartRoundRequest,
 } from "~/type/action.type";
 import { GameService } from "~/service/game.service";
 import { WebSocketRoom } from "~/service/ws.service";
@@ -44,7 +45,10 @@ export const wssController = (wss: WebSocketServer) => {
             break;
 
           case ACTION.START_ROUND:
-            gameService.startRound();
+            response = gameService.startRound(
+              (data.action.payload as StartRoundRequest).gameId
+            );
+            webSocketRoom.sendMessageToRoom(response.game.id, response);
             break;
 
           case ACTION.PLAY_CARD:

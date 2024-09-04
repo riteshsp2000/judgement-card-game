@@ -35,7 +35,12 @@ export class GameService {
     return { game };
   }
 
-  startRound() {}
+  startRound(gameId: string) {
+    const game = this.validateAndGetGame(gameId);
+    game.startRound();
+    this.games[game.id] = game;
+    return { game };
+  }
 
   playCard() {}
 

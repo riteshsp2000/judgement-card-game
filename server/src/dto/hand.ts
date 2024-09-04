@@ -1,11 +1,11 @@
-import { SUITE } from "~/type/card.type";
+import { SUIT } from "~/type/card.type";
 import { Card } from "~/dto/card";
 
 export class Hand {
   private cards: Array<Card> = [];
-  private trump: SUITE = SUITE.SPADE;
+  private trump: SUIT = SUIT.SPADE;
 
-  constructor(trump: SUITE) {
+  constructor(trump: SUIT) {
     this.trump = trump;
   }
 }
