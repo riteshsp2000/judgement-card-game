@@ -1,5 +1,6 @@
 import { Player } from "~/dto/player";
 import { Game } from "~/dto/game";
+import { Card } from "~/dto/card";
 
 export class GameService {
   private games: Record<string, Game>;
@@ -9,8 +10,6 @@ export class GameService {
   }
 
   createGame() {
-    // TODO: don't allow same user to create a new game if
-    // in existing game
     const player = new Player();
     const game = new Game();
 
@@ -42,7 +41,20 @@ export class GameService {
     return { game };
   }
 
-  playCard() {}
+  callHand(gameId: string, playerId: string, numberOfHands: number) {
+    console.log("came here");
+    const game = this.validateAndGetGame(gameId);
+    game.callHand(playerId, numberOfHands);
+    this.games[game.id] = game;
+    return { game };
+  }
+
+  playCard(gameId: string, playerId: string, card: Card) {
+    const game = this.validateAndGetGame(gameId);
+    game.playCard(playerId, card);
+    this.games[game.id] = game;
+    return { game };
+  }
 
   handleInvalidAction() {}
 

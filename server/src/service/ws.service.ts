@@ -26,6 +26,9 @@ export class WebSocketRoom {
   sendMessageToRoom(roomId: string, data: any) {
     if (!this.rooms[roomId]) throw new Error("NO ROOM FOUND TO SEND MESSAGE");
 
+    console.log("sending message to room: ", roomId);
+    console.log(data);
+
     this.rooms[roomId].forEach((ws) => {
       if (ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify(data));

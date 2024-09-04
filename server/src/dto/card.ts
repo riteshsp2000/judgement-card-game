@@ -1,11 +1,11 @@
 import { RANK, SUIT } from "~/type/card.type";
 
 export class Card {
-  public suite: SUIT | undefined;
-  public rank: RANK | undefined;
+  public suit: SUIT;
+  public rank: RANK;
 
-  constructor(suite: SUIT, rank: RANK) {
-    this.suite = suite;
+  constructor(suit: SUIT, rank: RANK) {
+    this.suit = suit;
     this.rank = rank;
   }
 }

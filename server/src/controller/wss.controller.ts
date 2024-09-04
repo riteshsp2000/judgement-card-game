@@ -1,7 +1,9 @@
 import { WebSocketServer } from "ws";
 import {
   ACTION,
+  CallHandRequest,
   JoinGameRequest,
+  PlayCardRequest,
   Request,
   StartGameRequest,
   StartRoundRequest,
@@ -38,21 +40,41 @@ export const wssController = (wss: WebSocketServer) => {
             break;
 
           case ACTION.START_GAME:
-            response = gameService.startGame(
-              (data.action.payload as StartGameRequest).gameId
-            );
-            webSocketRoom.sendMessageToRoom(response.game.id, response);
+            if (data.game) {
+              response = gameService.startGame(data.game?.id);
+              webSocketRoom.sendMessageToRoom(response.game.id, response);
+            }
             break;
 
           case ACTION.START_ROUND:
-            response = gameService.startRound(
-              (data.action.payload as StartRoundRequest).gameId
-            );
-            webSocketRoom.sendMessageToRoom(response.game.id, response);
+            if (data.game) {
+              response = gameService.startRound(data.game.id);
+              webSocketRoom.sendMessageToRoom(response.game.id, response);
+            }
+            break;
+
+          case ACTION.CALL_HANDS:
+            console.log(data.game, data.player);
+            if (data.game && data.player) {
+              console.log("came inside if condition");
+              response = gameService.callHand(
+                data.game.id,
+                data.player.id,
+                (data.action.payload as CallHandRequest).numberOfHands
+              );
+              webSocketRoom.sendMessageToRoom(response.game.id, response);
+            }
             break;
 
           case ACTION.PLAY_CARD:
-            gameService.playCard();
+            if (data.game && data.player) {
+              response = gameService.playCard(
+                data.game.id,
+                data.player.id,
+                (data.action.payload as PlayCardRequest).card
+              );
+              webSocketRoom.sendMessageToRoom(response.game.id, response);
+            }
             break;
 
           default:

@@ -11,4 +11,5 @@ function generateUniqueId(): string {
 
 export const generateGameId = () => `game:${generateUniqueId()}`;
 export const generatePlayerId = () => `player:${generateUniqueId()}`;
+export const generateRoundId = () => `round:${generateUniqueId()}`;
 export const generateHandId = () => `hand:${generateUniqueId()}`;
