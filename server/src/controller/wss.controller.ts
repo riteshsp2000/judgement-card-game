@@ -1,6 +1,6 @@
 import { WebSocketServer } from "ws";
-import { JoinGameRequest, Request } from "../dto/message";
-import { GameService } from "~/service/game";
+import { JoinGameRequest, Request } from "~/type/action.type";
+import { GameService } from "~/service/game.service";
 
 const gameService = new GameService();
 

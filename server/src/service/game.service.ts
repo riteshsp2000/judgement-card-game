@@ -1,5 +1,5 @@
-import { Player } from "../dto/player";
-import { Game } from "../dto/game";
+import { Player } from "~/dto/player";
+import { Game } from "~/dto/game";
 
 export class GameService {
   private games: Record<string, Game>;

@@ -1,4 +1,5 @@
-import { Card, SUITE } from "./card";
+import { SUITE } from "~/type/card.type";
+import { Card } from "~/dto/card";
 
 export class Hand {
   private cards: Array<Card> = [];

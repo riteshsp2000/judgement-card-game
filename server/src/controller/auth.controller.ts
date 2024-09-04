@@ -1,6 +1,6 @@
 import { Express } from "express";
 
-import * as authService from "../service/auth";
+import * as authService from "~/service/auth.service";
 
 export const authController = (app: Express) => {
   app.post("/login", (req, res) => {

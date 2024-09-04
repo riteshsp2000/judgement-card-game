@@ -1,4 +1,4 @@
-import { generatePlayerId } from "../util/generateId";
+import { generatePlayerId } from "~/util/generateId";
 
 export class Player {
   public id = generatePlayerId();

@@ -1,15 +1,8 @@
-import { generateGameId } from "../util/generateId";
-import { Card } from "./card";
-import { Hand } from "./hand";
-import { Player } from "./player";
-
-export enum GAME_STATUS {
-  CREATED = "CREATED",
-  STARTED = "STARTED",
-  ROUND_IN_PROGRESS = "ROUND_IN_PROGRESS",
-  ROUND_COMPLETED = "ROUND_COMPLETED",
-  COMPLETED = "COMPLETED",
-}
+import { GAME_STATUS } from "~/type/game.type";
+import { generateGameId } from "~/util/generateId";
+import { Card } from "~/dto/card";
+import { Hand } from "~/dto/hand";
+import { Player } from "~/dto/player";
 
 export class Game {
   public id: string = generateGameId();

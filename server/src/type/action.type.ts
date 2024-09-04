@@ -1,5 +1,5 @@
-import { Game } from "./game";
-import { Player } from "./player";
+import { Game } from "~/dto/game";
+import { Player } from "~/dto/player";
 
 export enum ACTION {
   CREATE_GAME = "CREATE_GAME",
@@ -35,14 +35,4 @@ export interface Request {
     type: ACTION;
     payload: RequestPayload;
   };
-}
-
-export enum REACTION {
-  GAME_CREATED = "GAME_CREATED",
-  GAME_JOINED = "GAME_JOINED",
-}
-
-export interface Response {
-  game: Game;
-  player: Player;
 }

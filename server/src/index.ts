@@ -2,10 +2,10 @@ import express from "express";
 import http from "http";
 import { WebSocketServer } from "ws";
 
-import { PORT } from "./constant/env";
-import { healthController } from "./controller/health";
-import { authController } from "./controller/auth";
-import { wssController } from "./controller/wss";
+import { PORT } from "~/constant/env";
+import { healthController } from "~/controller/health.controller";
+import { authController } from "~/controller/auth.controller";
+import { wssController } from "~/controller/wss.controller";
 
 const app = express();
 const server = http.createServer(app);
