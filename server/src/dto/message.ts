@@ -1,3 +1,6 @@
+import { Game } from "./game";
+import { Player } from "./player";
+
 export enum ACTION {
   CREATE_GAME = "CREATE_GAME",
   JOIN_GAME = "JOIN_GAME",
@@ -6,28 +9,40 @@ export enum ACTION {
   PLAY_CARD = "PLAY_CARD",
 }
 
-export interface CreateGamePayload {}
+export interface CreateGameRequest {}
 
-export interface JoinGamePayload {}
-
-export interface StartGamePayload {}
-
-export interface StartRoundPayload {}
-
-export interface PlayCardPayload {}
-
-export type Payload =
-  | CreateGamePayload
-  | JoinGamePayload
-  | StartGamePayload
-  | StartRoundPayload
-  | PlayCardPayload;
-
-export interface Message {
+export interface JoinGameRequest {
   gameId: string;
-  playerId: string;
+}
+
+export interface StartGameRequest {}
+
+export interface StartRoundRequest {}
+
+export interface PlayCardRequest {}
+
+export type RequestPayload =
+  | CreateGameRequest
+  | JoinGameRequest
+  | StartGameRequest
+  | StartRoundRequest
+  | PlayCardRequest;
+
+export interface Request {
+  game?: Game;
+  player?: Player;
   action: {
     type: ACTION;
-    payload: Payload;
+    payload: RequestPayload;
   };
+}
+
+export enum REACTION {
+  GAME_CREATED = "GAME_CREATED",
+  GAME_JOINED = "GAME_JOINED",
+}
+
+export interface Response {
+  game: Game;
+  player: Player;
 }
