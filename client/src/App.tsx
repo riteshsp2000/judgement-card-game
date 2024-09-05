@@ -1,9 +1,10 @@
-import { lazy } from "react";
+import { lazy, Suspense } from "react";
 import {
   createBrowserRouter,
   RouteObject,
   RouterProvider,
 } from "react-router-dom";
+import FullPageLoader from "./components/FullPageLoader";
 
 const CreateGame = lazy(() => import("~/screens/CreateGame"));
 const Lobby = lazy(() => import("~/screens/Lobby"));
@@ -33,7 +34,13 @@ const router = createBrowserRouter(ROUTES);
 function App() {
   return (
     <>
-      <RouterProvider router={router} />
+      <Suspense
+        fallback={
+          <FullPageLoader title="Please wait" description="loading..." />
+        }
+      >
+        <RouterProvider router={router} />
+      </Suspense>
     </>
   );
 }
