@@ -42,7 +42,6 @@ export class GameService {
   }
 
   callHand(gameId: string, playerId: string, numberOfHands: number) {
-    console.log("came here");
     const game = this.validateAndGetGame(gameId);
     game.callHand(playerId, numberOfHands);
     this.games[game.id] = game;

@@ -9,28 +9,25 @@ export class Round {
   public id = generateRoundId();
 
   private trump: TRUMP;
-  private numberOfCardsDealt: number | undefined;
 
   private currentHand: Hand | undefined;
   private previousHands: Array<Hand> = [];
 
+  private numberOfCardsToDeal: number;
   private cardsDealt: Record<string, Array<Card>> = {};
-  public playerToPlay: number = 0;
   private numberOfPlayersPlaying: number = 0;
 
-  private numberOfHandsCalled: Record<string, number> = {};
-  private scores: Record<string, number> = {};
+  public numberOfHandsCalled: Record<string, number> = {};
+  public numberOfHandsMade: Record<string, number> = {};
 
   constructor(
     players: Array<Player>,
     numberOfCardsToDeal: number,
-    trump: TRUMP,
-    playerToPlay: number
+    trump: TRUMP
   ) {
     this.trump = trump;
-    this.numberOfCardsDealt = numberOfCardsToDeal;
-    this.playerToPlay = playerToPlay;
     this.numberOfPlayersPlaying = players.length;
+    this.numberOfCardsToDeal = numberOfCardsToDeal;
 
     this.initialiseRound(players, numberOfCardsToDeal);
   }
@@ -56,39 +53,119 @@ export class Round {
   }
 
   playCard(playerId: string, card: Card) {
-    this.validatePlayedCard(playerId, card);
+    /**
+     * check if all players have called number of hands
+     * check if player has that card
+     * check if player can play that card
+     *
+     * if first card played, create a new hand
+     *
+     * add card to the hand
+     * update player to play
+     *
+     * if last card played,
+     * determine the winner
+     * update points
+     * update player to play
+     */
+
+    if (!this.allPlayersCalledHands())
+      throw new Error("UNHANDLED: NOT ALL PLAYERS CALLED HAND");
+
+    if (!this.playerHasCard(playerId, card))
+      throw new Error("UNHANDLED: PLAYER DOES NOT HAVE THAT CARD");
+
+    if (!this.playerHasPlayedValidCard(playerId, card))
+      throw new Error("UNHANDLED: PLAYER HAS NOT PLAYED A VALID CARD");
 
     if (!this.currentHand) {
       this.currentHand = new Hand(this.numberOfPlayersPlaying, this.trump);
     }
 
     this.currentHand.addCard(playerId, card);
+    this.removePlayedCard(playerId, card);
 
     if (this.currentHand.allPlayersPlayed()) {
       this.currentHand.determineWinner();
+      this.incrementHandsMade();
+      this.startNextHand();
     }
   }
 
-  startNextHand() {
+  hasRoundEnded() {
+    return this.previousHands.length === this.numberOfCardsToDeal;
+  }
+
+  private removePlayedCard(playerId: string, card: Card) {
+    this.cardsDealt[playerId] = this.cardsDealt[playerId].filter(
+      (c) => c.suit !== card.suit && c.rank !== card.rank
+    );
+  }
+
+  private incrementHandsMade() {
+    const playerId = this.currentHand?.handWinner?.playerId;
+    if (!playerId) throw new Error("Unhanded case");
+
+    if (!this.numberOfHandsMade[playerId]) {
+      this.numberOfHandsMade[playerId] = 0;
+    }
+
+    this.numberOfHandsMade[playerId] = this.numberOfHandsMade[playerId] + 1;
+  }
+
+  private startNextHand() {
     if (this.currentHand) {
       this.previousHands.push(this.currentHand);
       this.currentHand = undefined;
     }
   }
 
-  private validatePlayedCard(playerId: string, card: Card) {
-    // Validate if the player has the card that is played
-    if (
-      !this.cardsDealt[playerId].some(
-        (c) => c.rank === card.rank && c.suit === card.suit
-      )
-    ) {
-      throw new Error("UNHANDLED: PLAYER DOES NOT HAVE THE CARD");
+  private allPlayersCalledHands() {
+    return (Object.keys(this.numberOfHandsCalled).length =
+      this.numberOfPlayersPlaying);
+  }
+
+  private playerHasCard(playerId: string, card: Card) {
+    return this.cardsDealt[playerId].some(
+      (c) => c.suit === card.suit && c.rank === card.rank
+    );
+  }
+
+  private playerHasPlayedValidCard(playerId: string, card: Card) {
+    // played card is that of same suit
+    if (this.currentHand?.firstPlayedSuit === card.suit) {
+      return true;
     }
 
-    // TODO: check the suit and other corresponding logic
+    // played card is trump
+    if (this.trump === card.suit) {
+      return true;
+    }
+
+    // player does not have same suit card
+    if (
+      !this.cardsDealt[playerId].some(
+        (c) => c.suit === this.currentHand?.firstPlayedSuit
+      )
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  hasPlayerMadeCalledNumberOfHands(playerId: string) {
+    return (
+      this.numberOfHandsCalled[playerId] === this.numberOfHandsMade[playerId]
+    );
+  }
+
+  getPreviousHandWinner() {
+    if (this.previousHands.length > 0) {
+      return this.previousHands[this.previousHands.length - 1].handWinner
+        ?.playerId;
+    } else {
+      return null;
+    }
   }
 }
-
-// const r = new Round([{id: 'adf'}], 7, SUIT.SPADE, 0);
-// r.playerToPlay

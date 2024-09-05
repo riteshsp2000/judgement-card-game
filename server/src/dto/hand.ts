@@ -11,9 +11,9 @@ export class Hand {
   public handWinner: ICard | undefined;
 
   private trump: TRUMP;
-  private firstPlayedSuit: SUIT | undefined;
+  public firstPlayedSuit: SUIT | undefined;
 
-  private numberOfPlayersPlaying: number | undefined;
+  private numberOfPlayersPlaying: number;
 
   constructor(numberOfPlayersPlaying: number, trump: TRUMP) {
     this.numberOfPlayersPlaying = numberOfPlayersPlaying;

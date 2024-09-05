@@ -9,11 +9,14 @@ export class Game {
   public id: string = generateGameId();
   public players: Array<Player> = [];
 
+  /* GAME CONFIGURATIONS */
   private maxPlayers = 4;
   private minPlayers = 2;
   private numberOfCardsToDeal = 7;
 
+  /* GAME STATES */
   public status: GAME_STATUS = GAME_STATUS.CREATED;
+  public playerToPlay = 0;
 
   public currentRound: Round | undefined;
   public rounds: Array<Round> = [];
@@ -52,6 +55,12 @@ export class Game {
   }
 
   startRound() {
+    /**
+     * start round can be called only when previous
+     * round is complete, (add check)
+     *
+     * when called, update the current hand state
+     */
     if (this.currentRound) {
       this.rounds.push(this.currentRound);
       this.currentRound = undefined;
@@ -60,8 +69,7 @@ export class Game {
     this.currentRound = new Round(
       this.players,
       this.numberOfCardsToDeal,
-      this.determineTrumpForTheRound(),
-      this.determinePlayerToPlay()
+      this.determineTrumpForTheRound()
     );
   }
 
@@ -71,17 +79,43 @@ export class Game {
   }
 
   playCard(playerId: string, card: Card) {
+    this.validatePlayerToPlay(playerId);
     this.currentRound?.playCard(playerId, card);
+    this.playerToPlay = this.determinePlayerToPlay();
 
-    // current hand length === 0
-    // initialise a new hand
-    //
-    // push the card to the hand
-    // remove the card from the user's dealt cards
-    //
-    // current hand lenght === players length
-    // determine winner and broadcast winner
-    // end round
+    if (this.currentRound?.hasRoundEnded()) {
+      this.updatePoints();
+      this.startNextRound();
+    }
+
+    if (this.hasGameEnded()) {
+      this.status = GAME_STATUS.COMPLETED;
+    }
+  }
+
+  private startNextRound() {
+    if (this.currentRound) {
+      this.rounds.push(this.currentRound);
+      this.currentRound = undefined;
+    }
+  }
+
+  private updatePoints() {
+    this.players.forEach((p) => {
+      if (typeof this.score[p.id] === "undefined") {
+        this.score[p.id] = 0;
+      }
+
+      if (this.currentRound) {
+        if (this.currentRound.hasPlayerMadeCalledNumberOfHands(p.id)) {
+          this.score[p.id] =
+            this.score[p.id] + this.currentRound.numberOfHandsCalled[p.id];
+        } else {
+          this.score[p.id] =
+            this.score[p.id] - this.currentRound.numberOfHandsCalled[p.id];
+        }
+      }
+    });
   }
 
   private validatePlayerToPlay(playerId: string) {
@@ -112,6 +146,17 @@ export class Game {
   }
 
   private determinePlayerToPlay() {
+    /* Player to start the hand */
+    if (this.currentRound) {
+      const previousHandWinnerId = this.currentRound.getPreviousHandWinner();
+      if (previousHandWinnerId) {
+        return this.players.findIndex((p) => p.id === previousHandWinnerId);
+      } else {
+        return 0;
+      }
+    }
+
+    /* Player to start the round */
     const remainder = this.rounds.length % this.players.length;
     let returnValue = 0;
     for (let i = 0; i < this.players.length; i++) {
@@ -120,5 +165,9 @@ export class Game {
       }
     }
     return returnValue;
+  }
+
+  private hasGameEnded() {
+    return this.rounds.length === 5;
   }
 }
