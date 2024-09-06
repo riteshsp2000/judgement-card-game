@@ -14,9 +14,9 @@ const Layout: React.FC<PropsWithChildren<LayoutProps>> = ({
   hideHeader,
 }) => {
   return (
-    <div className="h-screen w-screen bg-background flex flex-col pt-16">
+    <div className="h-screen w-screen bg-background pt-16">
       {header ? header : hideHeader ? <></> : <AppBar />}
-      <div className="px-4">{children}</div>
+      <div className="px-4 h-full">{children}</div>
       <div className="fixed bottom-0 left-0 w-screen">{footer}</div>
     </div>
   );
