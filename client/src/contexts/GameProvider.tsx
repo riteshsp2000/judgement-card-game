@@ -8,6 +8,7 @@ interface GameContextType extends WebSocketResponse {
 export const GameContext = createContext<GameContextType>({
   game: null,
   player: null,
+  action: null,
   setGame: () => {},
 });
 
@@ -15,6 +16,7 @@ export const GameProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [state, setState] = useState<WebSocketResponse>({
     game: null,
     player: null,
+    action: null,
   });
 
   return (

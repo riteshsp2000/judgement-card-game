@@ -1,32 +1,38 @@
-import { UsersIcon, XIcon } from "lucide-react";
-import { useNavigate, useParams } from "react-router-dom";
+import { UsersIcon } from "lucide-react";
 import Layout from "~/components/Layout";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
-
-const PLAYERS = [
-  {
-    img: "https://avatars.githubusercontent.com/u/124599?v=4",
-    name: "U1",
-  },
-  {
-    img: "https://avatars.githubusercontent.com/u/124599?v=4",
-    name: "U2",
-  },
-  {
-    img: "https://avatars.githubusercontent.com/u/124599?v=4",
-    name: "U3",
-  },
-];
+import { APP_URL } from "~/constants/env";
+import { useToast } from "~/hooks/use-toast";
+import { useGame } from "~/hooks/useGame";
+import { useWebSocketConnection } from "~/hooks/useWebSocketConnection";
+import { ACTION } from "~/types/action.types";
+import { copyToClipboard } from "~/utils/copyToClipboard";
 
 const Lobby = () => {
-  const navigate = useNavigate();
-  const params = useParams();
+  const { game, player } = useGame();
+  const ws = useWebSocketConnection();
+  const { toast, dismiss } = useToast();
 
   const handleStartGameClick = () => {
-    navigate(`/game/play/${params.gameId}`);
+    ws?.sendMessage({
+      game,
+      player,
+      action: {
+        type: ACTION.START_GAME,
+      },
+    });
+  };
+
+  const handleCopyLinkClick = () => {
+    copyToClipboard(`${APP_URL}?gameId=${game?.id}`);
+    const toastId = toast({
+      title: "link copied",
+      variant: "success",
+    });
+    setTimeout(() => dismiss(toastId.id), 2000);
   };
 
   return (
@@ -48,31 +54,33 @@ const Lobby = () => {
               Invite your friends to join the game
             </p>
             <div className="flex items-center gap-2">
-              <Button variant="outline">Copy Link</Button>
+              <Button variant="outline" onClick={handleCopyLinkClick}>
+                Copy Link
+              </Button>
             </div>
           </div>
           <div className="mt-6 pt-6 flex flex-col gap-y-4">
-            {PLAYERS.map((p, index) => (
+            {game?.players.map((p, index) => (
               <>
                 {index !== 0 && <Separator />}
-                {console.log(index, index !== 0)}
                 <div
                   key={p.name}
                   className="flex items-center justify-between "
                 >
                   <div className="flex items-center gap-2">
                     <Avatar>
-                      <AvatarImage src={p.img} alt="User 1" />
+                      <AvatarImage
+                        src={
+                          "https://avatars.githubusercontent.com/u/124599?v=4"
+                        }
+                        alt="User 1"
+                      />
                       <AvatarFallback>{p.name}</AvatarFallback>
                     </Avatar>
                     <div>
                       <p className="font-medium">{p.name}</p>
                     </div>
                   </div>
-                  <Button variant="ghost" size="icon">
-                    <XIcon className="w-5 h-5 text-muted-foreground" />
-                    <span className="sr-only">Remove player</span>
-                  </Button>
                 </div>
               </>
             ))}

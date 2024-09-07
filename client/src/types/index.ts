@@ -1,4 +1,5 @@
 import { Card, SUIT, TRUMP } from "~/dto/card";
+import { ACTION } from "./action.types";
 
 export enum GAME_STATUS {
   CREATED = "CREATED",
@@ -60,4 +61,5 @@ export interface Player {
 export interface WebSocketResponse {
   game: Game | null;
   player: Player | null;
+  action: ACTION | null;
 }

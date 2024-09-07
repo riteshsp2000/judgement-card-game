@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Request } from "~/types/action.types";
 
 // Define types for the WebSocket hook
-export type WebSocketMessage = Record<string, unknown>; // Adjust this type according to your message structure
 export type WebSocketHookOptions<T> = {
   url: string;
   onMessage?: (message: T) => void;
 };
 
 export type UseWebSocketReturn = {
-  sendMessage: (message: WebSocketMessage) => void;
+  sendMessage: (message: Request) => void;
   isConnected: boolean;
 };
 
@@ -33,6 +33,7 @@ const useWebSocket = <T>({
       // Handle incoming messages
       ws.current.onmessage = (event: MessageEvent) => {
         const data = JSON.parse(event.data) as T;
+        console.log("INCOMING", data);
         if (onMessage) {
           onMessage(data);
         }
@@ -54,8 +55,9 @@ const useWebSocket = <T>({
 
   // Send message through WebSocket
   const sendMessage = useCallback(
-    (message: WebSocketMessage) => {
+    (message: Request) => {
       if (ws.current && isConnected) {
+        console.log("SENDING MESSAGE: ", message);
         ws.current.send(JSON.stringify(message));
       }
     },

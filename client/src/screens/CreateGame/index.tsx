@@ -1,21 +1,26 @@
 import { PlusIcon, UsersIcon } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+
 import FullPageLoader from "~/components/FullPageLoader";
 import JoinGameDrawer from "~/components/JoinGameDrawer";
 import Layout from "~/components/Layout";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
+import { useWebSocketConnection } from "~/hooks/useWebSocketConnection";
+import { ACTION } from "~/types/action.types";
 
 const CreateGame = () => {
-  const navigate = useNavigate();
+  const ws = useWebSocketConnection();
 
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [showJoinGameDrawer, setShowJoinGameDrawer] = useState(false);
 
   const handleCreateGameClick = () => {
-    setLoading(true);
-    setTimeout(() => navigate("/game/lobby/gameId"), 2000);
+    ws?.sendMessage({
+      action: {
+        type: ACTION.CREATE_GAME,
+      },
+    });
   };
 
   const handleJoinGameClick = () => {
