@@ -93,6 +93,10 @@ export class Game {
     }
   }
 
+  removePlayer(playerId: string) {
+    this.players = this.players.filter((p) => p.id !== playerId);
+  }
+
   private startNextRound() {
     if (this.currentRound) {
       this.rounds.push(this.currentRound);

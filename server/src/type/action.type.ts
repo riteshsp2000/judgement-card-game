@@ -9,6 +9,7 @@ export enum ACTION {
   START_ROUND = "START_ROUND",
   CALL_HANDS = "CALL_HANDS",
   PLAY_CARD = "PLAY_CARD",
+  LEAVE_GAME = "LEAVE_GAME",
 }
 
 export interface CreateGameRequest {}

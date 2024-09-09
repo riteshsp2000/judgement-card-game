@@ -1,4 +1,6 @@
 import { UsersIcon } from "lucide-react";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Layout from "~/components/Layout";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
@@ -12,6 +14,7 @@ import { ACTION } from "~/types/action.types";
 import { copyToClipboard } from "~/utils/copyToClipboard";
 
 const Lobby = () => {
+  const navigate = useNavigate();
   const { game, player } = useGame();
   const ws = useWebSocketConnection();
   const { toast, dismiss } = useToast();
@@ -34,6 +37,12 @@ const Lobby = () => {
     });
     setTimeout(() => dismiss(toastId.id), 2000);
   };
+
+  useEffect(() => {
+    if (!game || !player) {
+      navigate("/game/create");
+    }
+  }, [game, navigate, player]);
 
   return (
     <Layout

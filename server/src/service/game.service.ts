@@ -27,31 +27,42 @@ export class GameService {
     return { game, player };
   }
 
-  startGame(gameId: string) {
+  startGame(gameId?: string) {
     const game = this.validateAndGetGame(gameId);
     game.startGame();
     this.games[game.id] = game;
     return { game };
   }
 
-  startRound(gameId: string) {
+  startRound(gameId?: string) {
     const game = this.validateAndGetGame(gameId);
     game.startRound();
     this.games[game.id] = game;
     return { game };
   }
 
-  callHand(gameId: string, playerId: string, numberOfHands: number) {
+  callHand(gameId?: string, playerId?: string, numberOfHands?: number) {
     const game = this.validateAndGetGame(gameId);
+    if (!playerId) throw new Error("Player ID not found");
+    if (!numberOfHands) throw new Error("Number of hands not found");
     game.callHand(playerId, numberOfHands);
     this.games[game.id] = game;
     return { game };
   }
 
-  playCard(gameId: string, playerId: string, card: Card) {
+  playCard(gameId?: string, playerId?: string, card?: Card) {
     const game = this.validateAndGetGame(gameId);
+    if (!playerId) throw new Error("Player ID not found");
+    if (!card) throw new Error("Played card not found");
     game.playCard(playerId, card);
     this.games[game.id] = game;
+    return { game };
+  }
+
+  removePlayerFromGame(gameId?: string, playerId?: string) {
+    const game = this.validateAndGetGame(gameId);
+    if (!playerId) throw new Error("Player ID not found");
+    game.removePlayer(playerId);
     return { game };
   }
 

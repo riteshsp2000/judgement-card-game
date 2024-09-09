@@ -61,3 +61,36 @@
 - updates player to play
 - check if round ended
 - if so, start a new round
+
+<!-- GAME HANDLING LOGIC -->
+
+1. create game
+
+- create a game state
+- create a web socket room
+- create a web socket to game/player connection
+
+2. join game
+
+- check if game exists in state
+- add player to the game state
+- check if web socket room exists
+- add player to web socket room
+- create a web socket to game/player connection
+
+3. leave game
+
+- check if game exists in state
+- remove player from game state
+- check if web socket room exists
+- remove player from web socket room
+- if all players left the game, end the game
+
+Data structure
+
+```
+{
+  rooms: Record<string, WebSocket[]>;
+
+}
+```

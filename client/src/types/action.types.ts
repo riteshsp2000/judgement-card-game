@@ -4,6 +4,7 @@ import { Game, Player } from ".";
 export enum ACTION {
   CREATE_GAME = "CREATE_GAME",
   JOIN_GAME = "JOIN_GAME",
+  LEAVE_GAME = "LEAVE_GAME",
   START_GAME = "START_GAME",
   START_ROUND = "START_ROUND",
   CALL_HANDS = "CALL_HANDS",
