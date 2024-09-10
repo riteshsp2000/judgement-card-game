@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Request } from "~/types/action.types";
 
-// Define types for the WebSocket hook
 export type WebSocketHookOptions<T> = {
   url: string;
   onMessage?: (message: T) => void;
@@ -21,25 +20,20 @@ const useWebSocket = <T>({
 
   useEffect(() => {
     if (!ws.current) {
-      // Create WebSocket connection
       ws.current = new WebSocket(url);
 
-      // Handle connection open
       ws.current.onopen = () => {
         setIsConnected(true);
         console.log("WebSocket connected");
       };
 
-      // Handle incoming messages
       ws.current.onmessage = (event: MessageEvent) => {
         const data = JSON.parse(event.data) as T;
-        console.log("INCOMING", data);
         if (onMessage) {
           onMessage(data);
         }
       };
 
-      // Handle WebSocket close
       ws.current.onclose = () => {
         setIsConnected(false);
         console.log("WebSocket disconnected");
@@ -53,11 +47,9 @@ const useWebSocket = <T>({
     // };
   }, [url, onMessage]);
 
-  // Send message through WebSocket
   const sendMessage = useCallback(
     (message: Request) => {
       if (ws.current && isConnected) {
-        console.log("SENDING MESSAGE: ", message);
         ws.current.send(JSON.stringify(message));
       }
     },

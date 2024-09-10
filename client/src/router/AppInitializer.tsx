@@ -10,16 +10,16 @@ import { ACTION } from "~/types/action.types";
 const AppInitialiser = () => {
   const navigate = useNavigate();
   const { toast, dismiss } = useToast();
-  const { game, player, setGame, action } = useGame();
+  const { setGame } = useGame();
 
   const webSocket = useWebSocket<WebSocketResponse>({
     url: WS_API_BASE_URL,
     onMessage: (data) => {
-      const stateToBeSet = { game, player, action };
-      if (data.game) stateToBeSet.game = data.game;
-      if (data.player) stateToBeSet.player = data.player;
-      if (data.action) stateToBeSet.action = data.action;
-      setGame(stateToBeSet);
+      setGame((current) => ({
+        game: data.game,
+        action: data.action,
+        player: current.player || data.player,
+      }));
 
       switch (data.action) {
         case ACTION.CREATE_GAME:

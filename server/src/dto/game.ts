@@ -76,6 +76,7 @@ export class Game {
   callHand(playerId: string, numberOfHands: number) {
     this.validatePlayerToPlay(playerId);
     this.currentRound?.callNumberOfHands(playerId, numberOfHands);
+    this.playerToPlay = this.determinePlayerToPlay();
   }
 
   playCard(playerId: string, card: Card) {

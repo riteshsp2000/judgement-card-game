@@ -40,7 +40,7 @@ const Lobby = () => {
 
   useEffect(() => {
     if (!game || !player) {
-      navigate("/game/create");
+      // navigate("/game/create");
     }
   }, [game, navigate, player]);
 

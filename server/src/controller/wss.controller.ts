@@ -36,6 +36,13 @@ export const wssController = (wss: WebSocketServer) => {
               gameId: responseWithoutAction.game.id,
               playerId: responseWithoutAction?.player?.id,
             });
+            ws.send(
+              JSON.stringify({
+                ...responseWithoutAction,
+                action: data.action.type,
+              })
+            );
+            responseWithoutAction.player = undefined;
             break;
 
           case ACTION.JOIN_GAME:
@@ -47,6 +54,13 @@ export const wssController = (wss: WebSocketServer) => {
               gameId: responseWithoutAction.game.id,
               playerId: responseWithoutAction?.player?.id,
             });
+            ws.send(
+              JSON.stringify({
+                ...responseWithoutAction,
+                action: data.action.type,
+              })
+            );
+            responseWithoutAction.player = undefined;
             break;
 
           case ACTION.LEAVE_GAME:
@@ -86,7 +100,6 @@ export const wssController = (wss: WebSocketServer) => {
           default:
             responseWithoutAction = {
               game: data.game as Game,
-              player: data.player,
             };
             gameService.handleInvalidAction();
             break;

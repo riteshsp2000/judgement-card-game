@@ -60,6 +60,6 @@ export interface Player {
 
 export interface WebSocketResponse {
   game: Game | null;
-  player: Player | null;
+  player?: Player | null;
   action: ACTION | null;
 }

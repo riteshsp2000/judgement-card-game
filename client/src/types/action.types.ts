@@ -24,14 +24,10 @@ export interface StartRoundRequest {
 }
 
 export interface CallHandRequest {
-  gameId: string;
-  playerId: string;
   numberOfHands: number;
 }
 
 export interface PlayCardRequest {
-  gameId: string;
-  playerId: string;
   card: Card;
 }
 
@@ -39,7 +35,8 @@ export type RequestPayload =
   | JoinGameRequest
   | StartGameRequest
   | StartRoundRequest
-  | PlayCardRequest;
+  | PlayCardRequest
+  | CallHandRequest;
 
 export interface Request {
   game?: Game | null;
