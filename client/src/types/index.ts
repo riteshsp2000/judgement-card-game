@@ -22,7 +22,7 @@ export interface ICard {
 
 export interface Hand {
   cards: Record<string, ICard>;
-  handWinner: { card: ICard };
+  handWinner: ICard;
   trump: TRUMP;
   firstPlayedSuit?: SUIT;
   numberOfPlayersPlaying: number;

@@ -157,45 +157,93 @@ const Game = () => {
             </div>
           ) : (
             <>
-              <div className="mt-4 p-4 rounded-md border flex-col justify-center items-center">
-                <h4 className="text-lg font-semibold">Call number of hands</h4>
-                <p className="text-sm font-light mt-2">
-                  Enter the number of hands you intend to make and then click
-                  the submit button
-                </p>
-                <Input
-                  value={numberOfHands}
-                  onChange={(e) => setNumberOfHands(Number(e.target.value))}
-                  className="mt-4"
-                />
-                <Button
-                  variant="outline"
-                  className="mt-4"
-                  onClick={handleCallHandClick}
-                >
-                  Submit
-                </Button>
-              </div>
-
-              <div className="mt-4 p-4 rounded-md border">
-                <p className="text-sm font-light mt-2">
-                  waiting for player{" "}
-                  <i>
-                    <b> {game.players[game.playerToPlay].id} </b>
-                  </i>{" "}
-                  to call number of hands
-                </p>
-
-                <div className="mt- text-xs">
-                  {Object.entries(game.currentRound.numberOfHandsCalled).map(
-                    (entry) => (
-                      <p key={entry[0]} className="mt-2">
-                        {entry[0]} called - {entry[1]} hands
-                      </p>
-                    )
-                  )}
+              {game.currentRound.previousHands.length ? (
+                <div className="mt-4 p-4 rounded-md border bg-[#43a373] flex flex-wrap items-start justify-around gap-3">
+                  {Object.values(
+                    game.currentRound?.previousHands[
+                      game.currentRound?.previousHands.length - 1
+                    ]?.cards || {}
+                  ).map((cp, index) => {
+                    const cardPlayer = game.players.filter(
+                      (p) => p.id === cp.playerId
+                    )[0];
+                    return (
+                      <div
+                        key={index}
+                        className={
+                          cp.playerId ===
+                          game.currentRound?.previousHands[
+                            game.currentRound?.previousHands.length - 1
+                          ].handWinner.playerId
+                            ? "border-blue-400 border-4 rounded p-1"
+                            : ""
+                        }
+                      >
+                        <div className="flex mb-2">
+                          <Avatar className="w-5 h-5">
+                            <AvatarImage
+                              src={
+                                "https://avatars.githubusercontent.com/u/124599?v=4"
+                              }
+                            />
+                            <AvatarFallback>
+                              {cardPlayer.name || "RP"}
+                            </AvatarFallback>
+                          </Avatar>
+                          <h5 className="text-sm font-medium ml-2">
+                            {cardPlayer.name}
+                          </h5>
+                        </div>
+                        <CardImg card={cp.card} />
+                      </div>
+                    );
+                  })}
                 </div>
-              </div>
+              ) : (
+                <>
+                  <div className="mt-4 p-4 rounded-md border flex-col justify-center items-center">
+                    <h4 className="text-lg font-semibold">
+                      Call number of hands
+                    </h4>
+                    <p className="text-sm font-light mt-2">
+                      Enter the number of hands you intend to make and then
+                      click the submit button
+                    </p>
+                    <Input
+                      value={numberOfHands}
+                      onChange={(e) => setNumberOfHands(Number(e.target.value))}
+                      className="mt-4"
+                    />
+                    <Button
+                      variant="outline"
+                      className="mt-4"
+                      onClick={handleCallHandClick}
+                    >
+                      Submit
+                    </Button>
+                  </div>
+
+                  <div className="mt-4 p-4 rounded-md border">
+                    <p className="text-sm font-light mt-2">
+                      waiting for player{" "}
+                      <i>
+                        <b> {game.players[game.playerToPlay].id} </b>
+                      </i>{" "}
+                      to call number of hands
+                    </p>
+
+                    <div className="mt- text-xs">
+                      {Object.entries(
+                        game.currentRound.numberOfHandsCalled
+                      ).map((entry) => (
+                        <p key={entry[0]} className="mt-2">
+                          {entry[0]} called - {entry[1]} hands
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
             </>
           )}
         </>

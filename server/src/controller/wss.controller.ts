@@ -14,11 +14,6 @@ import { Game } from "~/dto/game";
 const gameService = new GameService();
 const webSocketRoom = new WebSocketRoom();
 
-const connectionMap = new Map<
-  WebSocket,
-  { gameId?: string; playerId?: string }
->();
-
 export const wssController = (wss: WebSocketServer) => {
   wss.on("connection", (ws, req) => {
     console.log("WSS SERVER CONNECTED");
@@ -31,11 +26,11 @@ export const wssController = (wss: WebSocketServer) => {
         switch (data.action.type) {
           case ACTION.CREATE_GAME:
             responseWithoutAction = gameService.createGame();
-            webSocketRoom.joinRoom(responseWithoutAction.game.id, ws);
-            connectionMap.set(ws, {
-              gameId: responseWithoutAction.game.id,
-              playerId: responseWithoutAction?.player?.id,
-            });
+            webSocketRoom.joinRoom(
+              responseWithoutAction.game.id,
+              responseWithoutAction.player!.id,
+              ws
+            );
             ws.send(
               JSON.stringify({
                 ...responseWithoutAction,
@@ -48,12 +43,17 @@ export const wssController = (wss: WebSocketServer) => {
           case ACTION.JOIN_GAME:
             responseWithoutAction = gameService.joinGame(
               (data.action.payload as JoinGameRequest).gameId
+            ) as Response;
+
+            if (!responseWithoutAction?.game?.id) {
+              return ws.send(JSON.stringify({ game: null, player: null }));
+            }
+
+            webSocketRoom.joinRoom(
+              responseWithoutAction.game.id,
+              responseWithoutAction.player!.id,
+              ws
             );
-            webSocketRoom.joinRoom(responseWithoutAction.game.id, ws);
-            connectionMap.set(ws, {
-              gameId: responseWithoutAction.game.id,
-              playerId: responseWithoutAction?.player?.id,
-            });
             ws.send(
               JSON.stringify({
                 ...responseWithoutAction,
@@ -70,7 +70,6 @@ export const wssController = (wss: WebSocketServer) => {
             );
             webSocketRoom.leaveRoom(ws);
             gameService.removePlayerFromGame(data.game?.id, data.player?.id);
-            connectionMap.delete(ws);
             break;
 
           case ACTION.START_GAME:
@@ -101,7 +100,6 @@ export const wssController = (wss: WebSocketServer) => {
             responseWithoutAction = {
               game: data.game as Game,
             };
-            gameService.handleInvalidAction();
             break;
         }
 
@@ -111,25 +109,27 @@ export const wssController = (wss: WebSocketServer) => {
         });
       } catch (error) {
         console.error(error);
-        console.error("Something went wrong");
       }
     });
 
     ws.on("close", () => {
-      const connectionData = connectionMap.get(ws);
+      const connectionData = webSocketRoom.getConnectionDataFromWs(ws);
+      console.log(connectionData);
 
       if (connectionData) {
-        const { gameId, playerId } = connectionData;
-        webSocketRoom.leaveRoom(ws);
         const responseWithoutAction = gameService.removePlayerFromGame(
-          gameId,
-          playerId
+          connectionData.gameId,
+          connectionData.playerId
         );
-        connectionMap.delete(ws);
-        webSocketRoom.sendMessageToRoom(responseWithoutAction?.game?.id, {
+
+        webSocketRoom.leaveRoom(ws);
+        webSocketRoom.deleteConnectionDataByWs(ws);
+        webSocketRoom.sendMessageToRoom(connectionData.gameId as string, {
           ...responseWithoutAction,
           action: ACTION.LEAVE_GAME,
         });
+      } else {
+        console.error("NO CONNECTION DATA FOUND ON CONNECTION CLOSE");
       }
     });
   });

@@ -19,12 +19,16 @@ export class GameService {
   }
 
   joinGame(gameId?: string) {
-    const game = this.validateAndGetGame(gameId);
+    try {
+      const game = this.validateAndGetGame(gameId);
 
-    const player = new Player();
-    game.players.push(player);
-    this.games[game.id] = game;
-    return { game, player };
+      const player = new Player();
+      game.players.push(player);
+      this.games[game.id] = game;
+      return { game, player };
+    } catch (e) {
+      return {};
+    }
   }
 
   startGame(gameId?: string) {
