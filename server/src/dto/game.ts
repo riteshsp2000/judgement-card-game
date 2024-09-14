@@ -151,8 +151,29 @@ export class Game {
   }
 
   private determinePlayerToPlay() {
+    /* Next player after number of hands called */
+    if (
+      this.currentRound &&
+      Object.keys(this.currentRound.numberOfHandsCalled).length <
+        this.players.length
+    ) {
+      const numberOfHandsCalled = Object.keys(
+        this.currentRound.numberOfHandsCalled
+      ).length;
+      return (this.playerToPlay + numberOfHandsCalled) % this.players.length;
+    }
+
+    /* Next player after currently played (card) */
+    if (this.currentRound && this.currentRound.currentHand) {
+      const numberOfPlayersPlayed = Object.keys(
+        this.currentRound.currentHand.cards
+      ).length;
+
+      return (this.playerToPlay + numberOfPlayersPlayed) % this.players.length;
+    }
+
     /* Player to start the hand */
-    if (this.currentRound) {
+    if (this.currentRound && !this.currentRound.currentHand) {
       const previousHandWinnerId = this.currentRound.getPreviousHandWinner();
       if (previousHandWinnerId) {
         return this.players.findIndex((p) => p.id === previousHandWinnerId);

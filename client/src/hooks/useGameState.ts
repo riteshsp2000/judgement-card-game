@@ -130,7 +130,7 @@ export const useGameState = () => {
     return hands;
   }, [game?.currentRound, game?.players]);
 
-  const playerToPlayer = useMemo(() => {
+  const playerToPlay = useMemo(() => {
     return game?.players[game?.playerToPlay];
   }, [game?.playerToPlay, game?.players]);
 
@@ -201,7 +201,7 @@ export const useGameState = () => {
       isFirstRoundHand,
       scorecard,
       handsMadeAndCalled,
-      playerToPlayer,
+      playerToPlay,
     },
     actions: {
       handleRoundStartClick,

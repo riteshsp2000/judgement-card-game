@@ -36,16 +36,26 @@ const Game = () => {
         />
       }
     >
-      <Tabs onStartRoundClick={actions.handleRoundStartClick} />
+      <Tabs
+        game={game}
+        player={player}
+        onStartRoundClick={actions.handleRoundStartClick}
+      />
 
       {(() => {
         switch (state.stage) {
           case STAGES.START_ROUND:
-            return <Scoreboard score={state.scorecard} />;
+            return (
+              <>
+                <PlayerToPlay player={state.playerToPlay} />
+                <Scoreboard score={state.scorecard} />
+              </>
+            );
 
           case STAGES.CALL_HANDS:
             return (
               <>
+                <PlayerToPlay player={state.playerToPlay} />
                 <CallHands
                   game={state.game}
                   onSubmitNumberOfHands={actions.handleCallHandClick}
@@ -56,7 +66,7 @@ const Game = () => {
           case STAGES.PLAY_CARDS:
             return (
               <>
-                <PlayerToPlay player={state.playerToPlayer} />
+                <PlayerToPlay player={state.playerToPlay} />
                 <PlayCards game={game} player={player} />
               </>
             );
@@ -64,7 +74,7 @@ const Game = () => {
           case STAGES.START_HAND:
             return (
               <>
-                <PlayerToPlay player={state.playerToPlayer} />
+                <PlayerToPlay player={state.playerToPlay} />
                 <HandsMadeCalled
                   handsMadeCalled={state.handsMadeAndCalled}
                   showHandsCalled

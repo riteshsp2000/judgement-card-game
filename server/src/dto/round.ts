@@ -10,7 +10,7 @@ export class Round {
 
   private trump: TRUMP;
 
-  private currentHand: Hand | undefined;
+  public currentHand: Hand | undefined;
   private previousHands: Array<Hand> = [];
 
   private numberOfCardsToDeal: number;
