@@ -98,7 +98,7 @@ export class Round {
 
   private removePlayedCard(playerId: string, card: Card) {
     this.cardsDealt[playerId] = this.cardsDealt[playerId].filter(
-      (c) => c.suit !== card.suit && c.rank !== card.rank
+      (c) => c.suit !== card.suit || c.rank !== card.rank
     );
   }
 

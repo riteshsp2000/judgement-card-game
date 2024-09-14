@@ -71,7 +71,7 @@ export class Hand {
 
   private determineHighestCardOfSameSuit(icards: Array<ICard>) {
     return icards.sort(
-      (icard1, icard2) => icard1.card.rank - icard2.card.rank
+      (icard1, icard2) => icard2.card.rank - icard1.card.rank
     )[0];
   }
 }
