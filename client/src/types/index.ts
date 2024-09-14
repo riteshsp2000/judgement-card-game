@@ -56,6 +56,7 @@ export interface Game {
 export interface Player {
   id: string;
   name: string;
+  img: string;
 }
 
 export interface WebSocketResponse {

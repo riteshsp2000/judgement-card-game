@@ -1,6 +1,10 @@
 import { Player } from "~/dto/player";
 import { Game } from "~/dto/game";
 import { Card } from "~/dto/card";
+import { generatePlayerName } from "~/util/generateId";
+
+// Temporary naming service;
+const gameNames = new Map<string, Array<{ name: string; img: string }>>();
 
 export class GameService {
   private games: Record<string, Game>;
@@ -10,8 +14,8 @@ export class GameService {
   }
 
   createGame() {
-    const player = new Player();
     const game = new Game();
+    const player = new Player(generatePlayerName(game.id, gameNames));
 
     game.addPlayer(player);
     this.games[game.id] = game;
@@ -22,7 +26,7 @@ export class GameService {
     try {
       const game = this.validateAndGetGame(gameId);
 
-      const player = new Player();
+      const player = new Player(generatePlayerName(game.id, gameNames));
       game.players.push(player);
       this.games[game.id] = game;
       return { game, player };

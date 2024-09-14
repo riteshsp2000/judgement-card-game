@@ -54,12 +54,12 @@ const Lobby = () => {
         </footer>
       }
     >
-      <main className="flex-1 grid grid-cols-1 gap-4 py-4">
-        <Card className="bg-card text-card-foreground p-6">
+      <main className="grid flex-1 grid-cols-1 gap-4 py-4">
+        <Card className="p-6 bg-card text-card-foreground">
           <div className="flex flex-col items-center justify-center">
             <UsersIcon className="w-12 h-12 mb-4" />
-            <h2 className="text-2xl font-bold mb-2">Waiting for players...</h2>
-            <p className="text-sm text-muted-foreground mb-4">
+            <h2 className="mb-2 text-2xl font-bold">Waiting for players...</h2>
+            <p className="mb-4 text-sm text-muted-foreground">
               Invite your friends to join the game
             </p>
             <div className="flex items-center gap-2">
@@ -68,7 +68,7 @@ const Lobby = () => {
               </Button>
             </div>
           </div>
-          <div className="mt-6 pt-6 flex flex-col gap-y-4">
+          <div className="flex flex-col pt-6 mt-6 gap-y-4">
             {game?.players.map((p, index) => (
               <>
                 {index !== 0 && <Separator />}
@@ -78,12 +78,7 @@ const Lobby = () => {
                 >
                   <div className="flex items-center gap-2">
                     <Avatar>
-                      <AvatarImage
-                        src={
-                          "https://avatars.githubusercontent.com/u/124599?v=4"
-                        }
-                        alt="User 1"
-                      />
+                      <AvatarImage src={p.img} alt="User 1" />
                       <AvatarFallback>{p.name}</AvatarFallback>
                     </Avatar>
                     <div>
