@@ -3,6 +3,7 @@ import { useGame } from "./useGame";
 import { useWebSocketConnection } from "./useWebSocketConnection";
 import { ACTION } from "~/types/action.types";
 import { Card } from "~/dto/card";
+import { Player } from "~/types";
 
 export enum STAGES {
   START_ROUND = "START_ROUND", // shows scoreboard
@@ -10,7 +11,28 @@ export enum STAGES {
   //   Repeats after every hand from here
   START_HAND = "START_HAND", // shows hands called and hands made and the card won
   PLAY_CARDS = "PLAY_CARDS", // shows cards played
-  //   END_HAND = "END_HAND", // shows card that won
+}
+
+export interface IndividualScore {
+  player: Player;
+  score: number;
+  correct: number;
+  incorrect: number;
+}
+
+export interface ScoreCard {
+  players: Array<IndividualScore>;
+  roundsPlayed: number;
+}
+
+export interface IndividualHand {
+  player: Player;
+  handsCalled: number;
+  handsMade: number;
+}
+
+export interface Hands {
+  players: Array<IndividualHand>;
 }
 
 export const useGameState = () => {
@@ -74,6 +96,58 @@ export const useGameState = () => {
     return STAGES.START_ROUND;
   }, [allPlayersCalledHands, allPlayersPlayedCards, game?.currentRound]);
 
+  const scorecard = useMemo(() => {
+    const score: ScoreCard = {
+      players: [],
+      roundsPlayed: 0,
+    };
+
+    if (game?.score && game?.players) {
+      score.players = game.players.map((player) => ({
+        player,
+        score: game.score[player.id] || 0,
+        correct: 0,
+        incorrect: 0,
+      }));
+    }
+
+    return score;
+  }, [game?.players, game?.score]);
+
+  const handsMadeAndCalled = useMemo(() => {
+    const hands: Hands = {
+      players: [],
+    };
+
+    if (game?.currentRound) {
+      hands.players = game.players.map((player) => ({
+        player,
+        handsCalled: game.currentRound.numberOfHandsCalled[player.id] || 0,
+        handsMade: game.currentRound.numberOfHandsMade[player.id] || 0,
+      }));
+    }
+
+    return hands;
+  }, [game?.currentRound, game?.players]);
+
+  const playerToPlayer = useMemo(() => {
+    return game?.players[game?.playerToPlay];
+  }, [game?.playerToPlay, game?.players]);
+
+  /**
+   * utils
+   */
+  const getPlayerFromId = useCallback(
+    (playerId?: string | null) => {
+      if (!playerId || !game) return null;
+      return game.players.filter((p) => p.id === playerId)[0];
+    },
+    [game]
+  );
+
+  /**
+   * A list of actions used in the game
+   */
   const handleRoundStartClick = useCallback(() => {
     ws?.sendMessage({
       action: {
@@ -125,11 +199,17 @@ export const useGameState = () => {
       allPlayersCalledHands,
       allPlayersPlayedCards,
       isFirstRoundHand,
+      scorecard,
+      handsMadeAndCalled,
+      playerToPlayer,
     },
     actions: {
       handleRoundStartClick,
       handleCallHandClick,
       handleDealtCardClick,
+    },
+    utils: {
+      getPlayerFromId,
     },
   };
 };

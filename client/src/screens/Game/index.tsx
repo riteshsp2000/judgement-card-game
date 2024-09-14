@@ -10,6 +10,8 @@ import CallHands from "./CallHands";
 import Scoreboard from "./Scoreboard";
 import Tabs from "./Tabs";
 import DealtCards from "./DealtCards";
+import PlayerToPlay from "./PlayerToPlay";
+import HandsMadeCalled from "./HandsMadeCalled";
 
 const Game = () => {
   const navigate = useNavigate();
@@ -39,21 +41,37 @@ const Game = () => {
       {(() => {
         switch (state.stage) {
           case STAGES.START_ROUND:
-            return <Scoreboard />;
+            return <Scoreboard score={state.scorecard} />;
 
           case STAGES.CALL_HANDS:
             return (
-              <CallHands
-                game={state.game}
-                onSubmitNumberOfHands={actions.handleCallHandClick}
-              />
+              <>
+                <CallHands
+                  game={state.game}
+                  onSubmitNumberOfHands={actions.handleCallHandClick}
+                />
+              </>
             );
 
           case STAGES.PLAY_CARDS:
-            return <PlayCards game={game} player={player} />;
+            return (
+              <>
+                <PlayerToPlay player={state.playerToPlayer} />
+                <PlayCards game={game} player={player} />
+              </>
+            );
 
           case STAGES.START_HAND:
-            return <HandWinner game={game} />;
+            return (
+              <>
+                <PlayerToPlay player={state.playerToPlayer} />
+                <HandsMadeCalled
+                  handsMadeCalled={state.handsMadeAndCalled}
+                  showHandsCalled
+                />
+                <HandWinner game={game} />
+              </>
+            );
 
           default:
             return <>unhandled case, think of it</>;

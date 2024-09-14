@@ -28,7 +28,7 @@ const HandWinner: React.FC<{ game: Game }> = ({ game }) => {
             <div className="flex mb-2">
               <Avatar className="w-5 h-5">
                 <AvatarImage src={cardPlayer.img} />
-                <AvatarFallback>{cardPlayer.name || "RP"}</AvatarFallback>
+                <AvatarFallback>{cardPlayer.name[0] || "RP"}</AvatarFallback>
               </Avatar>
               <h5 className="ml-2 text-sm font-medium">{cardPlayer.name}</h5>
             </div>
