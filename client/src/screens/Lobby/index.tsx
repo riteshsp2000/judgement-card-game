@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
-import { APP_URL } from "~/constants/env";
+import { APP_BASE_URL } from "~/constants/env";
 import { useToast } from "~/hooks/use-toast";
 import { useGame } from "~/hooks/useGame";
 import { useWebSocketConnection } from "~/hooks/useWebSocketConnection";
@@ -30,7 +30,7 @@ const Lobby = () => {
   };
 
   const handleCopyLinkClick = () => {
-    copyToClipboard(`${APP_URL}?gameId=${game?.id}`);
+    copyToClipboard(`${APP_BASE_URL}?gameId=${game?.id}`);
     const toastId = toast({
       title: "link copied",
       variant: "success",

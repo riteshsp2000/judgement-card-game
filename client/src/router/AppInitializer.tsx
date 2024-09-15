@@ -1,5 +1,5 @@
 import { Outlet, useNavigate } from "react-router-dom";
-import { WS_API_BASE_URL } from "~/constants/env";
+import { WS_BASE_URL } from "~/constants/env";
 import { WebSocketConnectionProvider } from "~/contexts/WebSocketConnectionProvider";
 import { useToast } from "~/hooks/use-toast";
 import { useGame } from "~/hooks/useGame";
@@ -13,7 +13,7 @@ const AppInitialiser = () => {
   const { setGame } = useGame();
 
   const webSocket = useWebSocket<WebSocketResponse>({
-    url: WS_API_BASE_URL,
+    url: WS_BASE_URL,
     onMessage: (data) => {
       setGame((current) => ({
         game: data.game,

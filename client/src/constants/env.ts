@@ -1,2 +1,3 @@
-export const WS_API_BASE_URL = "ws://localhost:8080";
-export const APP_URL = "http://localhost:5173";
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+export const WS_BASE_URL = import.meta.env.VITE_WS_BASE_URL;
+export const APP_BASE_URL = import.meta.env.VITE_APP_BASE_URL;
