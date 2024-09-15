@@ -1,0 +1,42 @@
+name: Deploy Nodejs Application
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "server/**" # Only trigger when changes are made in the server directory
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+        # add env variables here
+        #   - name: Create .env file
+        #     run: echo "MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}" >> .env
+
+      - name: Login to docker hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build docker image
+        working-directory: ./server
+        run: docker build -t riteshsp2000/judgment-card-game-server .
+
+      - name: Publish image to docker hub
+        run: docker push riteshsp2000/judgment-card-game-server:latest
+
+  deploy:
+    needs: build
+    runs-on: self-hosted
+    steps:
+      - name: Pull image from docker hub
+        run: docker pull riteshsp2000/judgment-card-game-server:latest
+
+      - name: Delete old container
+        run: docker rm -f nodejs-app-container
+
+      - name: Run docker container
+        run: docker run -d -p 80:80 --name nodejs-app-container riteshsp2000/judgment-card-game-server
