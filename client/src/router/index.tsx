@@ -11,6 +11,7 @@ const CreateGame = lazy(() => import("~/screens/CreateGame"));
 const Lobby = lazy(() => import("~/screens/Lobby"));
 const GameScreen = lazy(() => import("~/screens/Game"));
 const JoinGame = lazy(() => import("~/screens/JoinGame"));
+const PageNotFound = lazy(() => import("~/screens/404"));
 
 const ROUTES: RouteObject[] = [
   {
@@ -41,7 +42,7 @@ const ROUTES: RouteObject[] = [
   },
   {
     path: "*",
-    element: <>hello page not found</>,
+    element: <PageNotFound />,
   },
 ];
 

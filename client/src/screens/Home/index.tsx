@@ -16,8 +16,13 @@ import {
   SpadeIcon,
 } from "lucide-react";
 import ShufflingCards from "~/components/ShufflingCards";
+import { useNavigate } from "react-router-dom";
 
 export default function Component() {
+  const navigate = useNavigate();
+
+  const handleStartGameClick = () => navigate("/game/create");
+
   return (
     <div className="flex items-center justify-center min-h-screen p-4">
       <motion.div
@@ -61,7 +66,11 @@ export default function Component() {
             </div>
           </CardContent>
           <CardFooter className="flex justify-center">
-            <Button className="w-40 text-lg" size="lg">
+            <Button
+              className="w-40 text-lg"
+              size="lg"
+              onClick={handleStartGameClick}
+            >
               <PlayIcon className="w-5 h-5 mr-2" /> Start Game
             </Button>
           </CardFooter>
