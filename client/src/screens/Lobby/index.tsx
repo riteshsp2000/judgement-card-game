@@ -17,7 +17,7 @@ const Lobby = () => {
   const navigate = useNavigate();
   const { game, player } = useGame();
   const ws = useWebSocketConnection();
-  const { toast, dismiss } = useToast();
+  const { toast } = useToast();
 
   const handleStartGameClick = () => {
     ws?.sendMessage({
@@ -30,17 +30,16 @@ const Lobby = () => {
   };
 
   const handleCopyLinkClick = () => {
-    copyToClipboard(`${APP_BASE_URL}?gameId=${game?.id}`);
-    const toastId = toast({
+    copyToClipboard(`${APP_BASE_URL}/game?gameId=${game?.id}`);
+    toast({
       title: "link copied",
       variant: "success",
     });
-    setTimeout(() => dismiss(toastId.id), 2000);
   };
 
   useEffect(() => {
     if (!game || !player) {
-      // navigate("/game/create");
+      navigate("/game/create");
     }
   }, [game, navigate, player]);
 

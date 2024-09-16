@@ -14,6 +14,10 @@ const GameScreen = lazy(() => import("~/screens/Game"));
 const ROUTES: RouteObject[] = [
   {
     path: "/",
+    element: <>hello home page</>,
+  },
+  {
+    path: "/game",
     element: <AppInitialiser />,
     children: [
       {
@@ -21,18 +25,22 @@ const ROUTES: RouteObject[] = [
         element: <Home />,
       },
       {
-        path: "/game/create",
+        path: "create",
         element: <CreateGame />,
       },
       {
-        path: "/game/lobby/:gameId",
+        path: "lobby/:gameId",
         element: <Lobby />,
       },
       {
-        path: "/game/play/:gameId",
+        path: "play/:gameId",
         element: <GameScreen />,
       },
     ],
+  },
+  {
+    path: "*",
+    element: <>hello page not found</>,
   },
 ];
 

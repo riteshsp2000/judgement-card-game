@@ -9,7 +9,7 @@ import { ACTION } from "~/types/action.types";
 
 const AppInitialiser = () => {
   const navigate = useNavigate();
-  const { toast, dismiss } = useToast();
+  const { toast } = useToast();
   const { setGame } = useGame();
 
   const webSocket = useWebSocket<WebSocketResponse>({
@@ -35,11 +35,10 @@ const AppInitialiser = () => {
           break;
 
         case ACTION.LEAVE_GAME: {
-          const toastId = toast({
+          toast({
             title: `Player - left the game`,
             variant: "destructive",
           });
-          setTimeout(() => dismiss(toastId.id), 2000);
           break;
         }
       }

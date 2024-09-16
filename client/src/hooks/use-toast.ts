@@ -1,15 +1,16 @@
+// Inspired by react-hot-toast library
 import * as React from "react";
-
 import type { ToastActionElement, ToastProps } from "~/components/ui/toast";
 
-const TOAST_LIMIT = 1;
-const TOAST_REMOVE_DELAY = 3000;
+const TOAST_LIMIT = 3;
+export const TOAST_REMOVE_DELAY = 1000;
 
 type ToasterToast = ToastProps & {
   id: string;
   title?: React.ReactNode;
   description?: React.ReactNode;
   action?: ToastActionElement;
+  duration?: number;
 };
 
 export const actionTypes = {
@@ -22,7 +23,7 @@ export const actionTypes = {
 let count = 0;
 
 function genId() {
-  count = (count + 1) % Number.MAX_SAFE_INTEGER;
+  count = (count + 1) % Number.MAX_VALUE;
   return count.toString();
 }
 
@@ -51,7 +52,6 @@ interface State {
 }
 
 const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>();
-
 const addToRemoveQueue = (toastId: string) => {
   if (toastTimeouts.has(toastId)) {
     return;
@@ -71,6 +71,13 @@ const addToRemoveQueue = (toastId: string) => {
 export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "ADD_TOAST":
+      console.log(
+        new Date().toLocaleTimeString(),
+        "ADD_TOAST",
+        action.toast.id,
+        "duration:",
+        action.toast.duration
+      );
       return {
         ...state,
         toasts: [action.toast, ...state.toasts].slice(0, TOAST_LIMIT),
@@ -89,6 +96,13 @@ export const reducer = (state: State, action: Action): State => {
 
       // ! Side effects ! - This could be extracted into a dismissToast() action,
       // but I'll keep it here for simplicity
+      console.log(
+        new Date().toLocaleTimeString(),
+        "DISMISS_TOAST:",
+        toastId,
+        "duration:",
+        state.toasts[0].duration
+      );
       if (toastId) {
         addToRemoveQueue(toastId);
       } else {
