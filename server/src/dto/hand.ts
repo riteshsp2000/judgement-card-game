@@ -1,5 +1,7 @@
 import { SUIT, TRUMP } from "~/type/card.type";
 import { Card } from "~/dto/card";
+import { CustomError } from "./customError";
+import { ERRORS } from "~/constant/error";
 
 type ICard = {
   card: Card;
@@ -29,7 +31,7 @@ export class Hand {
 
   addCard(playerId: string, card: Card) {
     if (this.cards[playerId]) {
-      throw new Error("UNHANDLED: PLAYER ALREADY PLAYED");
+      throw new CustomError(ERRORS.PLAYER_ALREADY_PLAYED_CARD);
     }
 
     if (Object.keys(this.cards).length === 0) {

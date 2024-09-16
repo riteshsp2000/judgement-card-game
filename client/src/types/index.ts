@@ -59,8 +59,21 @@ export interface Player {
   img: string;
 }
 
-export interface WebSocketResponse {
+export interface WebSocketErrorResponse {
+  action: "ERROR";
+  payload: {
+    code: number;
+    message: string;
+    description?: string;
+  };
+}
+
+export interface WebSocketSuccessResponse {
   game: Game | null;
   player?: Player | null;
   action: ACTION | null;
 }
+
+export type WebSocketResponse =
+  | WebSocketErrorResponse
+  | WebSocketSuccessResponse;

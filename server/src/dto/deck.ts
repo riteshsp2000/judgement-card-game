@@ -1,5 +1,7 @@
 import { RANK, SUIT } from "~/type/card.type";
 import { Card } from "./card";
+import { CustomError } from "./customError";
+import { ERRORS } from "~/constant/error";
 
 export class Deck {
   private suits: SUIT[] = Object.values(SUIT);
@@ -30,7 +32,7 @@ export class Deck {
   // Generate and deal a specified number of cards
   dealCards(numCards: number): Card[] {
     if (numCards > this.deck.length) {
-      throw new Error("Not enough cards left in the deck");
+      throw new CustomError(ERRORS.NOT_ENOUGH_CARDS);
     }
 
     this.shuffleDeck();

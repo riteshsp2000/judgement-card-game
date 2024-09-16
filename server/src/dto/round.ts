@@ -4,6 +4,8 @@ import { Card } from "./card";
 import { Player } from "./player";
 import { Deck } from "./deck";
 import { SUIT, TRUMP } from "~/type/card.type";
+import { CustomError } from "./customError";
+import { ERRORS } from "~/constant/error";
 
 export class Round {
   public id = generateRoundId();
@@ -46,7 +48,7 @@ export class Round {
 
   callNumberOfHands(playerId: string, numberOfHands: number) {
     if (typeof this.numberOfHandsCalled[playerId] === "number") {
-      throw new Error("UNHANDLED: NUMBER OF HANDS ALREADY CALLED");
+      throw new CustomError(ERRORS.HANDS_ALREADY_CALLED);
     }
 
     this.numberOfHandsCalled[playerId] = numberOfHands;
@@ -70,13 +72,13 @@ export class Round {
      */
 
     if (!this.allPlayersCalledHands())
-      throw new Error("UNHANDLED: NOT ALL PLAYERS CALLED HAND");
+      throw new CustomError(ERRORS.HANDS_NOT_CALLED);
 
     if (!this.playerHasCard(playerId, card))
-      throw new Error("UNHANDLED: PLAYER DOES NOT HAVE THAT CARD");
+      throw new CustomError(ERRORS.PLAYER_HAS_NO_CARD);
 
     if (!this.playerHasPlayedValidCard(playerId, card))
-      throw new Error("UNHANDLED: PLAYER HAS NOT PLAYED A VALID CARD");
+      throw new CustomError(ERRORS.PLAYER_HAS_NO_VALID_CARD);
 
     if (!this.currentHand) {
       this.currentHand = new Hand(this.numberOfPlayersPlaying, this.trump);
@@ -104,7 +106,7 @@ export class Round {
 
   private incrementHandsMade() {
     const playerId = this.currentHand?.handWinner?.playerId;
-    if (!playerId) throw new Error("Unhanded case");
+    if (!playerId) throw new CustomError(ERRORS.PLAYER_NOT_FOUND);
 
     if (!this.numberOfHandsMade[playerId]) {
       this.numberOfHandsMade[playerId] = 0;
@@ -120,9 +122,11 @@ export class Round {
     }
   }
 
-  private allPlayersCalledHands() {
-    return (Object.keys(this.numberOfHandsCalled).length =
-      this.numberOfPlayersPlaying);
+  public allPlayersCalledHands() {
+    return (
+      Object.keys(this.numberOfHandsCalled).length ===
+      this.numberOfPlayersPlaying
+    );
   }
 
   private playerHasCard(playerId: string, card: Card) {
@@ -167,5 +171,9 @@ export class Round {
     } else {
       return null;
     }
+  }
+
+  isRoundComplete() {
+    return this.previousHands.length === this.numberOfCardsToDeal;
   }
 }

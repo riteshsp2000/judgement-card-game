@@ -4,7 +4,7 @@ import { WebSocketConnectionProvider } from "~/contexts/WebSocketConnectionProvi
 import { useToast } from "~/hooks/use-toast";
 import { useGame } from "~/hooks/useGame";
 import useWebSocket from "~/hooks/useWebSocket";
-import { WebSocketResponse } from "~/types";
+import { WebSocketErrorResponse, WebSocketResponse } from "~/types";
 import { ACTION } from "~/types/action.types";
 
 const AppInitialiser = () => {
@@ -15,31 +15,41 @@ const AppInitialiser = () => {
   const webSocket = useWebSocket<WebSocketResponse>({
     url: WS_BASE_URL,
     onMessage: (data) => {
-      setGame((current) => ({
-        game: data.game,
-        action: data.action,
-        player: current.player || data.player,
-      }));
+      if (data.action === "ERROR") {
+        toast({
+          title: (data as WebSocketErrorResponse).payload.message,
+          variant: "destructive",
+        });
+        return;
+      }
 
-      switch (data.action) {
-        case ACTION.CREATE_GAME:
-          navigate(`/game/lobby/${data.game?.id}`);
-          break;
+      if (data.action && Object.values(ACTION).includes(data.action)) {
+        setGame((current) => ({
+          game: data.game,
+          action: data.action,
+          player: current.player || data.player,
+        }));
 
-        case ACTION.JOIN_GAME:
-          navigate(`/game/lobby/${data.game?.id}`);
-          break;
+        switch (data.action) {
+          case ACTION.CREATE_GAME:
+            navigate(`/game/lobby/${data.game?.id}`);
+            break;
 
-        case ACTION.START_GAME:
-          navigate(`/game/play/${data.game?.id}`);
-          break;
+          case ACTION.JOIN_GAME:
+            navigate(`/game/lobby/${data.game?.id}`);
+            break;
 
-        case ACTION.LEAVE_GAME: {
-          toast({
-            title: `Player - left the game`,
-            variant: "destructive",
-          });
-          break;
+          case ACTION.START_GAME:
+            navigate(`/game/play/${data.game?.id}`);
+            break;
+
+          case ACTION.LEAVE_GAME: {
+            toast({
+              title: `Player - left the game`,
+              variant: "destructive",
+            });
+            break;
+          }
         }
       }
     },

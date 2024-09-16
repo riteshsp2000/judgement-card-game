@@ -4,6 +4,8 @@ import { Card } from "~/dto/card";
 import { Player } from "~/dto/player";
 import { SUIT } from "~/type/card.type";
 import { Round } from "./round";
+import { ERRORS } from "~/constant/error";
+import { CustomError } from "./customError";
 
 export class Game {
   public id: string = generateGameId();
@@ -34,6 +36,8 @@ export class Game {
   addPlayer(player: Player) {
     if (this.canAddPlayer()) {
       this.players.push(player);
+    } else {
+      throw new CustomError(ERRORS.GAME_FULL);
     }
   }
 
@@ -46,9 +50,11 @@ export class Game {
 
   startGame() {
     if (!this.canStartGame()) {
-      throw new Error(
-        "UNHANDLED: Cannot start the game (min max players check)"
-      );
+      throw new CustomError(ERRORS.CANNOT_START_GAME);
+    }
+
+    if (this.status !== GAME_STATUS.CREATED) {
+      throw new CustomError(ERRORS.CANNOT_START_GAME);
     }
 
     this.status = GAME_STATUS.STARTED;
@@ -62,6 +68,10 @@ export class Game {
      * when called, update the current hand state
      */
     if (this.currentRound) {
+      if (!this.currentRound.isRoundComplete()) {
+        throw new CustomError(ERRORS.ROUND_IN_PROGRESS);
+      }
+
       this.rounds.push(this.currentRound);
       this.currentRound = undefined;
     }
@@ -81,6 +91,7 @@ export class Game {
 
   playCard(playerId: string, card: Card) {
     this.validatePlayerToPlay(playerId);
+
     this.currentRound?.playCard(playerId, card);
     this.playerToPlay = this.determinePlayerToPlay();
 
@@ -125,11 +136,11 @@ export class Game {
 
   private validatePlayerToPlay(playerId: string) {
     if (!playerId) {
-      throw new Error("UNHANDLED: PLAYER ID NOT FOUND");
+      throw new CustomError(ERRORS.PLAYER_NOT_FOUND);
     }
 
-    if (!this.players.some((p) => p.id === playerId)) {
-      throw new Error("UNHANDLED: PLAYER NOT FOUND");
+    if (this.players.map((p) => p.id).indexOf(playerId) !== this.playerToPlay) {
+      throw new CustomError(ERRORS.INVALID_PLAYER_PLAYING);
     }
   }
 

@@ -1,8 +1,8 @@
 import { createContext, PropsWithChildren, useState } from "react";
-import { WebSocketResponse } from "~/types";
+import { WebSocketSuccessResponse } from "~/types";
 
-interface GameContextType extends WebSocketResponse {
-  setGame: React.Dispatch<React.SetStateAction<WebSocketResponse>>;
+interface GameContextType extends WebSocketSuccessResponse {
+  setGame: React.Dispatch<React.SetStateAction<WebSocketSuccessResponse>>;
 }
 
 export const GameContext = createContext<GameContextType>({
@@ -13,7 +13,7 @@ export const GameContext = createContext<GameContextType>({
 });
 
 export const GameProvider: React.FC<PropsWithChildren> = ({ children }) => {
-  const [state, setState] = useState<WebSocketResponse>({
+  const [state, setState] = useState<WebSocketSuccessResponse>({
     game: null,
     player: null,
     action: null,

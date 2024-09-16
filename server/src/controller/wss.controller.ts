@@ -10,6 +10,8 @@ import { GameService } from "~/service/game.service";
 import { WebSocketRoom } from "~/service/ws.service";
 import { Response } from "~/type/reaction.type";
 import { Game } from "~/dto/game";
+import { ERRORS } from "~/constant/error";
+import { CustomError } from "~/dto/customError";
 
 const gameService = new GameService();
 const webSocketRoom = new WebSocketRoom();
@@ -19,10 +21,17 @@ export const wssController = (wss: WebSocketServer) => {
     console.log("WSS SERVER CONNECTED");
 
     ws.on("message", (message) => {
-      try {
-        const data: Request = JSON.parse(message.toString());
-        let responseWithoutAction: Omit<Response, "action">;
+      let data: Request = {} as Request;
+      let responseWithoutAction: Omit<Response, "action">;
 
+      try {
+        data = JSON.parse(message.toString());
+        responseWithoutAction = { game: data.game as Game };
+      } catch (error) {
+        console.log("ERROR PARSEING JSON RESPONSE");
+      }
+
+      try {
         switch (data.action.type) {
           case ACTION.CREATE_GAME:
             responseWithoutAction = gameService.createGame();
@@ -69,7 +78,6 @@ export const wssController = (wss: WebSocketServer) => {
               data.player?.id
             );
             webSocketRoom.leaveRoom(ws);
-            gameService.removePlayerFromGame(data.game?.id, data.player?.id);
             break;
 
           case ACTION.START_GAME:
@@ -97,10 +105,7 @@ export const wssController = (wss: WebSocketServer) => {
             break;
 
           default:
-            responseWithoutAction = {
-              game: data.game as Game,
-            };
-            break;
+            throw new CustomError(ERRORS.INVALID_ACTION);
         }
 
         webSocketRoom.sendMessageToRoom(responseWithoutAction.game.id, {
@@ -108,13 +113,17 @@ export const wssController = (wss: WebSocketServer) => {
           action: data.action.type,
         });
       } catch (error) {
-        console.error(error);
+        ws.send(
+          JSON.stringify({
+            action: "ERROR",
+            payload: JSON.parse((error as Error).message),
+          })
+        );
       }
     });
 
     ws.on("close", () => {
       const connectionData = webSocketRoom.getConnectionDataFromWs(ws);
-      console.log(connectionData);
 
       if (connectionData) {
         const responseWithoutAction = gameService.removePlayerFromGame(

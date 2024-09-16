@@ -2,6 +2,8 @@ import { Player } from "~/dto/player";
 import { Game } from "~/dto/game";
 import { Card } from "~/dto/card";
 import { generatePlayerName } from "~/util/generateId";
+import { ERRORS } from "~/constant/error";
+import { CustomError } from "~/dto/customError";
 
 // Temporary naming service;
 const gameNames = new Map<string, Array<{ name: string; img: string }>>();
@@ -16,23 +18,17 @@ export class GameService {
   createGame() {
     const game = new Game();
     const player = new Player(generatePlayerName(game.id, gameNames));
-
     game.addPlayer(player);
     this.games[game.id] = game;
     return { game, player };
   }
 
   joinGame(gameId?: string) {
-    try {
-      const game = this.validateAndGetGame(gameId);
-
-      const player = new Player(generatePlayerName(game.id, gameNames));
-      game.players.push(player);
-      this.games[game.id] = game;
-      return { game, player };
-    } catch (e) {
-      return {};
-    }
+    const game = this.validateAndGetGame(gameId);
+    const player = new Player(generatePlayerName(game.id, gameNames));
+    game.addPlayer(player);
+    this.games[game.id] = game;
+    return { game, player };
   }
 
   startGame(gameId?: string) {
@@ -51,8 +47,8 @@ export class GameService {
 
   callHand(gameId?: string, playerId?: string, numberOfHands?: number) {
     const game = this.validateAndGetGame(gameId);
-    if (!playerId) throw new Error("Player ID not found");
-    if (!numberOfHands) throw new Error("Number of hands not found");
+    if (!playerId) throw new CustomError(ERRORS.PLAYER_NOT_FOUND);
+    if (!numberOfHands) throw new CustomError(ERRORS.INVALID_HANDS_CALLED);
     game.callHand(playerId, numberOfHands);
     this.games[game.id] = game;
     return { game };
@@ -60,8 +56,8 @@ export class GameService {
 
   playCard(gameId?: string, playerId?: string, card?: Card) {
     const game = this.validateAndGetGame(gameId);
-    if (!playerId) throw new Error("Player ID not found");
-    if (!card) throw new Error("Played card not found");
+    if (!playerId) throw new CustomError(ERRORS.PLAYER_NOT_FOUND);
+    if (!card) throw new CustomError(ERRORS.INVALID_CARD_PLAYED);
     game.playCard(playerId, card);
     this.games[game.id] = game;
     return { game };
@@ -69,22 +65,25 @@ export class GameService {
 
   removePlayerFromGame(gameId?: string, playerId?: string) {
     const game = this.validateAndGetGame(gameId);
-    if (!playerId) throw new Error("Player ID not found");
-    game.removePlayer(playerId);
+    if (!playerId) throw new CustomError(ERRORS.PLAYER_NOT_FOUND);
     return { game };
   }
 
   handleInvalidAction() {}
 
+  validatePlayer(playerId?: string) {
+    if (!playerId) throw new CustomError(ERRORS.PLAYER_NOT_FOUND);
+  }
+
   validateAndGetGame(gameId?: string) {
     if (!gameId) {
-      throw new Error("UNHANDLED: No game ID found");
+      throw new CustomError(ERRORS.GAME_NOT_FOUND);
     }
 
     const game = this.games[gameId];
 
     if (!Boolean(this.games[game.id])) {
-      throw new Error("UNHANDLED: Game does not exist");
+      throw new CustomError(ERRORS.GAME_NOT_FOUND);
     }
 
     return game;
