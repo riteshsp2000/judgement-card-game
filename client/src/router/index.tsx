@@ -5,16 +5,17 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import AppInitialiser from "./AppInitializer";
-import Home from "~/screens/Home";
 
+const Home = lazy(() => import("~/screens/Home"));
 const CreateGame = lazy(() => import("~/screens/CreateGame"));
 const Lobby = lazy(() => import("~/screens/Lobby"));
 const GameScreen = lazy(() => import("~/screens/Game"));
+const JoinGame = lazy(() => import("~/screens/JoinGame"));
 
 const ROUTES: RouteObject[] = [
   {
     path: "/",
-    element: <>hello home page</>,
+    element: <Home />,
   },
   {
     path: "/game",
@@ -22,7 +23,7 @@ const ROUTES: RouteObject[] = [
     children: [
       {
         index: true,
-        element: <Home />,
+        element: <JoinGame />,
       },
       {
         path: "create",
