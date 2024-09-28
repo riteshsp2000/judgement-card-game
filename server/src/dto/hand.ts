@@ -17,16 +17,27 @@ export class Hand {
   public cards: Record<string, ICard> = {};
   public handWinner: ICard | undefined;
 
-  public trump: TRUMP;
+  public trump = SUIT.SPADE as TRUMP;
   public firstPlayedSuit: SUIT | undefined;
 
-  private numberOfPlayersPlaying: number;
-  public status: HAND_STATUS;
+  private numberOfPlayersPlaying = 2;
+  public status = HAND_STATUS.IN_PROGRESS;
 
-  constructor(numberOfPlayersPlaying: number, trump: TRUMP) {
-    this.numberOfPlayersPlaying = numberOfPlayersPlaying;
-    this.trump = trump;
-    this.status = HAND_STATUS.IN_PROGRESS;
+  constructor(hand?: Hand, numberOfPlayersPlaying?: number, trump?: TRUMP) {
+    if (numberOfPlayersPlaying && trump) {
+      this.numberOfPlayersPlaying = numberOfPlayersPlaying;
+      this.trump = trump;
+      this.status = HAND_STATUS.IN_PROGRESS;
+    }
+
+    if (hand) {
+      this.cards = hand.cards;
+      this.handWinner = hand.handWinner;
+      this.trump = hand.trump;
+      this.firstPlayedSuit = hand.firstPlayedSuit;
+      this.numberOfPlayersPlaying = hand.numberOfPlayersPlaying;
+      this.status = hand.status;
+    }
   }
 
   addCard(playerId: string, card: Card) {
