@@ -12,37 +12,23 @@ export enum ACTION {
   LEAVE_GAME = "LEAVE_GAME",
 }
 
-export interface CreateGameRequest {}
-
 export interface JoinGameRequest {
   gameId: string;
 }
 
-export interface StartGameRequest {
-  gameId: string;
-}
-
-export interface StartRoundRequest {
-  gameId: string;
-}
-
 export interface CallHandRequest {
-  gameId: string;
   playerId: string;
   numberOfHands: number;
 }
 
 export interface PlayCardRequest {
-  gameId: string;
   playerId: string;
   card: Card;
 }
 
 export type RequestPayload =
-  | CreateGameRequest
   | JoinGameRequest
-  | StartGameRequest
-  | StartRoundRequest
+  | CallHandRequest
   | PlayCardRequest;
 
 export interface Request {
@@ -52,4 +38,10 @@ export interface Request {
     type: ACTION;
     payload: RequestPayload;
   };
+}
+
+export interface Response {
+  game: Game;
+  player?: Player;
+  action: ACTION;
 }

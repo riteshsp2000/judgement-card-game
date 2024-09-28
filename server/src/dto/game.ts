@@ -124,7 +124,6 @@ export class Game {
     this.validatePlayerToPlay(playerId);
 
     this.currentRound?.playCard(playerId, card);
-    this.playerToPlay = this.determinePlayerToPlay();
 
     if (this.currentRound?.hasRoundEnded()) {
       this.updatePoints();
@@ -134,9 +133,11 @@ export class Game {
     if (this.hasGameEnded()) {
       this.status = GAME_STATUS.COMPLETED;
     }
+
+    this.playerToPlay = this.determinePlayerToPlay();
   }
 
-  removePlayer(playerId: string) {
+  removePlayer(playerId?: string) {
     this.players = this.players.filter((p) => p.id !== playerId);
   }
 
@@ -194,45 +195,80 @@ export class Game {
 
   private determinePlayerToPlay() {
     /* Next player after number of hands called */
+    // if (
+    //   this.currentRound &&
+    //   Object.keys(this.currentRound.numberOfHandsCalled).length <
+    //     this.players.length
+    // ) {
+    //   const numberOfHandsCalled = Object.keys(
+    //     this.currentRound.numberOfHandsCalled
+    //   ).length;
+    //   return (this.playerToPlay + numberOfHandsCalled) % this.players.length;
+    // }
+
+    // /* Next player after currently played (card) */
+    // if (this.currentRound && this.currentRound.currentHand) {
+    //   const numberOfPlayersPlayed = Object.keys(
+    //     this.currentRound.currentHand.cards
+    //   ).length;
+
+    //   return (this.playerToPlay + numberOfPlayersPlayed) % this.players.length;
+    // }
+
+    // /* Player to start the hand */
+    // if (this.currentRound && !this.currentRound.currentHand) {
+    //   const previousHandWinnerId = this.currentRound.getPreviousHandWinner();
+    //   if (previousHandWinnerId) {
+    //     return this.players.findIndex((p) => p.id === previousHandWinnerId);
+    //   } else {
+    //     return 0;
+    //   }
+    // }
+
+    // /* Player to start the round */
+    // const remainder = this.rounds.length % this.players.length;
+    // let returnValue = 0;
+    // for (let i = 0; i < this.players.length; i++) {
+    //   if (remainder === i) {
+    //     returnValue = remainder;
+    //   }
+    // }
+    // return returnValue;
+
+    if (!this.currentRound || this.currentRound?.noHandsCalled()) {
+      return this.rounds.length % this.players.length;
+    }
+
+    if (this.currentRound && !this.currentRound.allPlayersCalledHands()) {
+      return this.nextPlayerInQueue();
+    }
+
     if (
       this.currentRound &&
-      Object.keys(this.currentRound.numberOfHandsCalled).length <
-        this.players.length
+      this.currentRound.allPlayersCalledHands() &&
+      !this.currentRound.currentHand
     ) {
-      const numberOfHandsCalled = Object.keys(
-        this.currentRound.numberOfHandsCalled
-      ).length;
-      return (this.playerToPlay + numberOfHandsCalled) % this.players.length;
-    }
-
-    /* Next player after currently played (card) */
-    if (this.currentRound && this.currentRound.currentHand) {
-      const numberOfPlayersPlayed = Object.keys(
-        this.currentRound.currentHand.cards
-      ).length;
-
-      return (this.playerToPlay + numberOfPlayersPlayed) % this.players.length;
-    }
-
-    /* Player to start the hand */
-    if (this.currentRound && !this.currentRound.currentHand) {
       const previousHandWinnerId = this.currentRound.getPreviousHandWinner();
-      if (previousHandWinnerId) {
-        return this.players.findIndex((p) => p.id === previousHandWinnerId);
-      } else {
-        return 0;
-      }
+      return previousHandWinnerId
+        ? this.players.findIndex((p) => p.id === previousHandWinnerId)
+        : this.nextPlayerInQueue();
     }
 
-    /* Player to start the round */
-    const remainder = this.rounds.length % this.players.length;
-    let returnValue = 0;
-    for (let i = 0; i < this.players.length; i++) {
-      if (remainder === i) {
-        returnValue = remainder;
-      }
+    if (
+      this.currentRound &&
+      this.currentRound.allPlayersCalledHands() &&
+      this.currentRound.currentHand
+    ) {
+      return this.nextPlayerInQueue();
     }
-    return returnValue;
+
+    return 0;
+  }
+
+  private nextPlayerInQueue() {
+    return this.playerToPlay === this.players.length - 1
+      ? 0
+      : this.playerToPlay + 1;
   }
 
   private hasGameEnded() {

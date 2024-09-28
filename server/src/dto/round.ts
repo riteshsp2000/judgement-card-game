@@ -150,6 +150,10 @@ export class Round {
     );
   }
 
+  public noHandsCalled() {
+    return Object.keys(this.numberOfHandsCalled).length === 0;
+  }
+
   private playerHasCard(playerId: string, card: Card) {
     return this.cardsDealt[playerId].some(
       (c) => c.suit === card.suit && c.rank === card.rank

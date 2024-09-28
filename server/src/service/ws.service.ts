@@ -1,6 +1,12 @@
 import { RawData, WebSocket } from "ws";
 import { redisStore, RedisStore } from "./redisStore.service";
-import { ACTION } from "~/type/action.type";
+import {
+  ACTION,
+  CallHandRequest,
+  JoinGameRequest,
+  PlayCardRequest,
+  Request,
+} from "~/type/action.type";
 import { CustomError } from "~/dto/customError";
 import { ERRORS } from "~/constant/error";
 import { Game } from "~/dto/game";
@@ -39,16 +45,14 @@ export class WsService {
   }
 
   async handleOnMessage(message: RawData) {
-    let action, payload, request;
+    let action: Request["action"]["type"],
+      payload: Request["action"]["payload"],
+      request: Request;
 
-    try {
-      const data = JSON.parse(message.toString());
-      request = data;
-      action = data.action.type;
-      payload = data.action.payload;
-    } catch (error) {
-      console.error(error);
-    }
+    const data = JSON.parse(message.toString()) as Request;
+    request = data;
+    action = data.action.type;
+    payload = data.action.payload;
 
     try {
       switch (action) {
@@ -76,7 +80,9 @@ export class WsService {
           /**
            * TODO: validate if the user can join the game
            */
-          const game = await this.fetchGameFromRedis(payload.gameId);
+          const game = await this.fetchGameFromRedis(
+            (payload as JoinGameRequest).gameId
+          );
           const player = new Player(generatePlayerName(game.id, gameNames));
           game.addPlayer(player);
           this.channelId = game.id;
@@ -95,8 +101,8 @@ export class WsService {
 
         case ACTION.LEAVE_GAME: {
           // check if player ID is there;
-          const game = await this.fetchGameFromRedis(request.game.id);
-          game.removePlayer(payload.playerId);
+          const game = await this.fetchGameFromRedis(request.game?.id);
+          game.removePlayer(request.player?.id);
           redisStore.setValue(game.id, game);
           redisPubSub.unsubscribe(game.id);
           redisPubSub.publish(game.id, { game, action });
@@ -104,7 +110,7 @@ export class WsService {
         }
 
         case ACTION.START_GAME: {
-          const game = await this.fetchGameFromRedis(request.game.id);
+          const game = await this.fetchGameFromRedis(request.game?.id);
           game.startGame();
           await redisStore.setValue(game.id, game);
           await redisPubSub.publish(game.id, { game, action });
@@ -112,7 +118,7 @@ export class WsService {
         }
 
         case ACTION.START_ROUND: {
-          const game = await this.fetchGameFromRedis(request.game.id);
+          const game = await this.fetchGameFromRedis(request.game?.id);
           game.startRound();
           await redisStore.setValue(game.id, game);
           await redisPubSub.publish(game.id, { game, action });
@@ -120,17 +126,19 @@ export class WsService {
         }
 
         case ACTION.CALL_HANDS: {
-          const game = await this.fetchGameFromRedis(request.game.id);
-          console.log(request);
-          game.callHand(request.player.id, payload.numberOfHands);
+          const game = await this.fetchGameFromRedis(request.game?.id);
+          game.callHand(
+            request.player!.id,
+            (payload as CallHandRequest).numberOfHands
+          );
           await redisStore.setValue(game.id, game);
           await redisPubSub.publish(game.id, { game, action });
           break;
         }
 
         case ACTION.PLAY_CARD: {
-          const game = await this.fetchGameFromRedis(request.game.id);
-          game.playCard(request.player.id, payload.card);
+          const game = await this.fetchGameFromRedis(request.game!.id);
+          game.playCard(request.player!.id, (payload as PlayCardRequest).card);
           await redisStore.setValue(game.id, game);
           await redisPubSub.publish(game.id, { game, action });
           break;
@@ -140,7 +148,12 @@ export class WsService {
           throw new CustomError(ERRORS.INVALID_ACTION);
       }
     } catch (error) {
-      console.error(error);
+      this.ws.send(
+        JSON.stringify({
+          action: "ERROR",
+          payload: JSON.parse((error as CustomError).message),
+        })
+      );
     }
   }
 

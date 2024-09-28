@@ -6,7 +6,7 @@ import { Game, Player } from "~/types";
 
 const PlayCards: React.FC<{ game: Game; player: Player }> = (props) => {
   return (
-    <div className="mt-4 p-4 rounded-md border bg-[#43a373] flex flex-wrap items-start justify-around gap-3">
+    <div className="mt-4 p-4 rounded-md border bg-[#43a373] flex flex-wrap items-start justify-around gap-3 mb-8">
       {Object.values(props.game?.currentRound?.currentHand?.cards || {}).map(
         (cp, index) => {
           const cardPlayer = props.game?.players.filter(
