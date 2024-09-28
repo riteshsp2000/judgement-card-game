@@ -7,11 +7,11 @@ import {
   Request,
 } from "~/type/action.type";
 import { GameService } from "~/service/game.service";
-import { WebSocketRoom } from "~/service/ws.service";
 import { Response } from "~/type/reaction.type";
 import { Game } from "~/dto/game";
 import { ERRORS } from "~/constant/error";
 import { CustomError } from "~/dto/customError";
+import { WebSocketRoom } from "~/service/wsRoom.service";
 
 const gameService = new GameService();
 const webSocketRoom = new WebSocketRoom();

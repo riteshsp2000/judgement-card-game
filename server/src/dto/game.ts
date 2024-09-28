@@ -24,7 +24,37 @@ export class Game {
   public rounds: Array<Round> = [];
   public score: Record<string, number> = {};
 
-  constructor() {}
+  constructor(game?: Game) {
+    if (game) {
+      this.id = game.id;
+      this.players = game.players;
+      this.maxPlayers = game.maxPlayers;
+      this.minPlayers = game.minPlayers;
+      this.numberOfCardsToDeal = game.numberOfCardsToDeal;
+      this.status = game.status;
+      this.playerToPlay = game.playerToPlay;
+      this.currentRound = game.currentRound
+        ? new Round(game.currentRound)
+        : undefined;
+      this.rounds = game.rounds;
+      this.score = game.score;
+
+      this.canAddPlayer.bind(this);
+      this.addPlayer.bind(this);
+      this.canStartGame.bind(this);
+      this.startGame.bind(this);
+      this.startRound.bind(this);
+      this.callHand.bind(this);
+      this.playCard.bind(this);
+      this.removePlayer.bind(this);
+      this.startNextRound.bind(this);
+      this.updatePoints.bind(this);
+      this.validatePlayerToPlay.bind(this);
+      this.determineTrumpForTheRound.bind(this);
+      this.determinePlayerToPlay.bind(this);
+      this.hasGameEnded.bind(this);
+    }
+  }
 
   canAddPlayer() {
     return (
@@ -77,6 +107,7 @@ export class Game {
     }
 
     this.currentRound = new Round(
+      undefined,
       this.players,
       this.numberOfCardsToDeal,
       this.determineTrumpForTheRound()

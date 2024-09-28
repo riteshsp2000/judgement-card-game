@@ -10,12 +10,12 @@ import { ERRORS } from "~/constant/error";
 export class Round {
   public id = generateRoundId();
 
-  private trump: TRUMP;
+  private trump = SUIT.SPADE as TRUMP;
 
   public currentHand: Hand | undefined;
   private previousHands: Array<Hand> = [];
 
-  private numberOfCardsToDeal: number;
+  private numberOfCardsToDeal = 7;
   private cardsDealt: Record<string, Array<Card>> = {};
   private numberOfPlayersPlaying: number = 0;
 
@@ -23,15 +23,32 @@ export class Round {
   public numberOfHandsMade: Record<string, number> = {};
 
   constructor(
-    players: Array<Player>,
-    numberOfCardsToDeal: number,
-    trump: TRUMP
+    round?: Round,
+    players?: Array<Player>,
+    numberOfCardsToDeal?: number,
+    trump?: TRUMP
   ) {
-    this.trump = trump;
-    this.numberOfPlayersPlaying = players.length;
-    this.numberOfCardsToDeal = numberOfCardsToDeal;
+    if (round) {
+      this.id = round.id;
+      this.trump = round.trump;
+      this.currentHand = round.currentHand
+        ? new Hand(round.currentHand)
+        : undefined;
+      this.previousHands = round.previousHands;
+      this.numberOfCardsToDeal = round.numberOfCardsToDeal;
+      this.cardsDealt = round.cardsDealt;
+      this.numberOfPlayersPlaying = round.numberOfPlayersPlaying;
+      this.numberOfHandsCalled = round.numberOfHandsCalled;
+      this.numberOfHandsMade = round.numberOfHandsMade;
+    }
 
-    this.initialiseRound(players, numberOfCardsToDeal);
+    if (trump) this.trump = trump;
+    if (players) this.numberOfPlayersPlaying = players.length;
+    if (numberOfCardsToDeal) this.numberOfCardsToDeal = numberOfCardsToDeal;
+
+    if (players && numberOfCardsToDeal) {
+      this.initialiseRound(players, numberOfCardsToDeal);
+    }
   }
 
   initialiseRound(players: Array<Player>, numberOfCardsToDeal: number) {
@@ -81,7 +98,11 @@ export class Round {
       throw new CustomError(ERRORS.PLAYER_HAS_NO_VALID_CARD);
 
     if (!this.currentHand) {
-      this.currentHand = new Hand(this.numberOfPlayersPlaying, this.trump);
+      this.currentHand = new Hand(
+        undefined,
+        this.numberOfPlayersPlaying,
+        this.trump
+      );
     }
 
     this.currentHand.addCard(playerId, card);
