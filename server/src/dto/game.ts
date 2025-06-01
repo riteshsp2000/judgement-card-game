@@ -162,7 +162,18 @@ export class Game {
   }
 
   private determinePlayerToPlay() {
+<<<<<<< Updated upstream
     /* Next player after number of hands called */
+=======
+    if (!this.currentRound || this.currentRound?.noHandsCalled()) {
+      return this.rounds.length % this.players.length;
+    }
+
+    if (this.currentRound && !this.currentRound.allPlayersCalledHands()) {
+      return this.nextPlayerInQueue();
+    }
+
+>>>>>>> Stashed changes
     if (
       this.currentRound &&
       Object.keys(this.currentRound.numberOfHandsCalled).length <
